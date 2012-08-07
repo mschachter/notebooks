@@ -1,0 +1,514 @@
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass amsart
+\use_default_options false
+\begin_removed_modules
+eqs-within-sections
+figs-within-sections
+\end_removed_modules
+\begin_modules
+theorems-ams
+\end_modules
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\spacing onehalf
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 1
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Useful Graph Theory for Probabilistic Graphical Models
+\end_layout
+
+\begin_layout Author
+Mike Schachter
+\end_layout
+
+\begin_layout Abstract
+A primer on aspects of graph theory that are useful for dealing with probabilist
+ic graphical models.
+\end_layout
+
+\begin_layout Section
+Basic Graph Stuff
+\end_layout
+
+\begin_layout Paragraph*
+
+\series medium
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+
+\series medium
+Graphs
+\end_layout
+
+\end_inset
+
+A graph 
+\begin_inset Formula $G=(V,E)$
+\end_inset
+
+ is comprised of an set of 
+\series default
+verticies
+\series medium
+ 
+\begin_inset Formula $V=\{v_{1},...,v_{n}\}$
+\end_inset
+
+ and 
+\series default
+edges 
+\begin_inset Formula $E=\{e_{1},...,e_{m}\}$
+\end_inset
+
+
+\series medium
+.
+ Each edge connects two 
+\series default
+adjacent
+\series medium
+ verticies, 
+\begin_inset Formula $e_{i}=(v_{a},v_{b})$
+\end_inset
+
+, and may be directed or undirected.
+ The 
+\series default
+order
+\series medium
+ of a graph is the number of verticies 
+\begin_inset Formula $n=|V|$
+\end_inset
+
+, while the 
+\series default
+size
+\series medium
+ of the graph is 
+\begin_inset Formula $m=|E|$
+\end_inset
+
+.
+ A function 
+\begin_inset Formula $\omega=f(e_{i})$
+\end_inset
+
+ can be used to assign a 
+\series default
+weight
+\series medium
+ to an edge.
+\end_layout
+
+\begin_layout Paragraph*
+
+\series medium
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+
+\series medium
+Subgraphs
+\end_layout
+
+\end_inset
+
+A 
+\series default
+subgraph 
+\series medium
+of 
+\begin_inset Formula $G$
+\end_inset
+
+ is a graph 
+\begin_inset Formula $G'=(V',E')$
+\end_inset
+
+ where 
+\begin_inset Formula $V'\subset V$
+\end_inset
+
+ and 
+\begin_inset Formula $E'\subset E$
+\end_inset
+
+.
+ A subgraph that's obtained by removing verticies from 
+\begin_inset Formula $V$
+\end_inset
+
+ and removing all edges in 
+\begin_inset Formula $E$
+\end_inset
+
+ that don't connect verticies in 
+\begin_inset Formula $V'$
+\end_inset
+
+ is called an 
+\series default
+induced subgraph
+\series medium
+.
+ Alternatively, when a subgraph is created by removing some edges, but keeping
+ all verticies so that 
+\begin_inset Formula $V=V'$
+\end_inset
+
+, then 
+\begin_inset Formula $G'$
+\end_inset
+
+ is said to be a 
+\series default
+spanning subgraph
+\series medium
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/graph_subgraphs.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Figure 1.1: (left-to-right) a graph 
+\begin_inset Formula $G$
+\end_inset
+
+, an induced subgraph of 
+\begin_inset Formula $G$
+\end_inset
+
+, a spanning subgraph of 
+\begin_inset Formula $G$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph*
+
+\series medium
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+
+\series medium
+Degrees, Neighborhoods
+\end_layout
+
+\end_inset
+
+For a given vertex 
+\begin_inset Formula $x\in V$
+\end_inset
+
+, the 
+\series default
+neighborhood
+\series medium
+ of 
+\begin_inset Formula $x$
+\end_inset
+
+ is the set of adjacent vertex, 
+\begin_inset Formula $\Gamma(x)=\{y\in V:(x,y)\in E\}$
+\end_inset
+
+.
+ The 
+\series default
+degree
+\series medium
+ of a vertex is the size of the neighborhood, 
+\series default
+
+\begin_inset Formula $deg(x)=|\Gamma(x)|$
+\end_inset
+
+
+\series medium
+.
+
+\series default
+ 
+\series medium
+The minimal and maximal degrees of a graph are given as 
+\begin_inset Formula $\delta(G)=min_{x\in V}deg(x)$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta(G)=max_{x\in V}deg(x)$
+\end_inset
+
+.
+ In a directed graph, the adjacent verticies pointing towards 
+\begin_inset Formula $x$
+\end_inset
+
+ are written as 
+\begin_inset Formula $\Gamma^{-}(x)$
+\end_inset
+
+, and verticies that 
+\begin_inset Formula $x$
+\end_inset
+
+ points to are 
+\begin_inset Formula $\Gamma^{+}(x)$
+\end_inset
+
+.
+ If every vertex has a degree of 
+\begin_inset Formula $k$
+\end_inset
+
+ , the graph is said to be 
+\series default
+k-regular
+\series medium
+.
+\end_layout
+
+\begin_layout Lemma*
+(Handshaking) The sum of degrees is even, and equal to twice the number
+ of edges:
+\end_layout
+
+\begin_layout Lemma*
+\begin_inset Formula \[
+\sum_{i=1}^{n}deg(v_{i})=2|E|\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph*
+
+\series medium
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+
+\series medium
+Walks, Paths, Cycles, Diameter
+\end_layout
+
+\end_inset
+
+A 
+\series default
+walk
+\series medium
+ is a sequence of traversed verticies 
+\begin_inset Formula $v_{1}e_{1a}v_{a}e_{ab}v_{b}...$
+\end_inset
+
+, and a 
+\series default
+path
+\series medium
+ is a walk where no back-steps are taken.
+ A 
+\series default
+cycle
+\series medium
+ is a path where the end vertex is equal to the beginning vertex.
+ The 
+\series default
+diameter
+\series medium
+ of a graph is the 
+\begin_inset Quotes eld
+\end_inset
+
+longest shortest path length
+\begin_inset Quotes erd
+\end_inset
+
+ across all verticies.
+ So given the shortest path between two points, 
+\begin_inset Formula $d(x,y)=argmin_{P}len(P(x,y))$
+\end_inset
+
+, where 
+\begin_inset Formula $P$
+\end_inset
+
+ is any path connecting 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+, the diameter is 
+\begin_inset Formula $dia(G)=max_{(x,y)\in V}d(x,y)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Paragraph*
+
+\series medium
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Connectedness, Trees
+\end_layout
+
+\end_inset
+
+A graph is 
+\series default
+connected
+\series medium
+ if for every 
+\begin_inset Formula $x,y\in V$
+\end_inset
+
+ there is a path from 
+\begin_inset Formula $x$
+\end_inset
+
+ to 
+\begin_inset Formula $y$
+\end_inset
+
+.
+ A 
+\series default
+tree
+\series medium
+ is a graph without cycles, where for any 
+\begin_inset Formula $x,y\in V$
+\end_inset
+
+ there is a simple path that connects 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+.
+ A 
+\series default
+caterpillar
+\series medium
+ tree has all verticies within a distance 1 of a central path.
+ A 
+\series default
+star
+\series medium
+ tree is a bipartite tree with one internal vertex and 
+\begin_inset Formula $k$
+\end_inset
+
+ leaves.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/graph_trees.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Figure 1.2: Trees.
+ Caterpillar tree (center), star tree (right)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Spanning Trees
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_body
+\end_document

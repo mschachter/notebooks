@@ -1,0 +1,1343 @@
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass amsart
+\begin_preamble
+\renewcommand{\theenumi}{\alph{enumi}} \renewcommand{\theenumii}{\arabic{enumii}} \renewcommand{\labelenumii}{\theenumii.} 
+\end_preamble
+\use_default_options false
+\begin_removed_modules
+eqs-within-sections
+figs-within-sections
+\end_removed_modules
+\begin_modules
+theorems-ams
+\end_modules
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\float_placement h
+\paperfontsize default
+\spacing onehalf
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 1
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+CS281: Homework #3
+\end_layout
+
+\begin_layout Author
+Mike Schachter
+\end_layout
+
+\begin_layout Problem
+Write out the maximum likelihood for each distribution and compute the ML
+ estimate 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Problem
+First I'll derive the maximum likelihood estimate for a general exponential
+ family, and then apply that to (a) and (b).
+ The likelihood function for an exponential family can be written as:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \begin{eqnarray*}
+p(x_{1},...,x_{n}|\eta) & = & \prod_{i=1}^{n}h(x_{i})exp(<T(x_{i}),\eta>-A(\eta))\\
+ & = & \{\prod_{i=1}^{n}h(x_{i})\}exp(\sum_{i=1}^{n}<T(x_{i}),\eta>-nA(\eta))\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Taking the log gives:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+l(x_{1},...,x_{n}|\eta)=\sum_{i=1}^{n}log(h(x_{i}))+\sum_{i=1}^{n}<T(x_{i}),\eta>+nA(\eta)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+And then taking the gradient with respect to 
+\begin_inset Formula $\eta$
+\end_inset
+
+ gives:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+\nabla_{\eta}l=\sum_{i=1}^{n}\nabla_{\eta}<T(x_{i}),\eta>-n\nabla_{\eta}A(\eta)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Setting the gradient to zero gives the expression that the ML estimate has
+ to satisfy:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+\frac{1}{n}\sum_{i=1}^{n}\nabla_{\eta}<T(x_{i}),\eta>=\nabla_{\eta}A(\eta)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Let 
+\begin_inset Formula $p(x;\mu)=\mu^{x}(1-\mu)^{(1-x)}$
+\end_inset
+
+ be the Bernoulli distribution, consider estimating 
+\begin_inset Formula $\mu$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Let 
+\begin_inset Formula $x=(x_{1},...,x_{n})$
+\end_inset
+
+.
+ First I'll rewrite the distribution as an exponential family.
+ Taking the log-exponential of the expression gives:
+\begin_inset Formula \begin{eqnarray*}
+p(x;\mu) & = & exp\{\sum_{i=1}^{n}x_{i}log(\mu)+(1-\sum_{i=1}^{n}x_{i})log(1-\mu)\}\\
+ & = & exp\{\sum_{i=1}^{n}x_{i}(log\frac{\mu}{1-\mu})+log(1-\mu)\}\end{eqnarray*}
+
+\end_inset
+
+From this expression we can see that:
+\begin_inset Formula \[
+T(x)=\sum_{i=1}^{n}x_{i}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+\eta=log\frac{\mu}{1-\mu}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+A(\eta)=log(1+e^{\eta})\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+h(x)=1\]
+
+\end_inset
+
+Using the expression for the ML estimate derived above implies that:
+\begin_inset Formula \begin{eqnarray*}
+\frac{1}{n}\sum_{i=1}^{n}x_{i} & = & (1+e^{\eta})^{-1}e^{\eta}\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Formula \[
+\frac{1}{n}\sum_{i=1}^{n}x_{i}=\hat{\mu}\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Let 
+\begin_inset Formula $X\sim Poisson(\lambda)$
+\end_inset
+
+, and estimate 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The likelihood of the Poisson distribution is given as:
+\begin_inset Formula \[
+p(x|\lambda)=\prod_{i=1}^{n}\lambda^{x_{i}}e^{-\lambda}\frac{1}{x_{i}!}\]
+
+\end_inset
+
+I'll rewrite this as an exponential family:
+\begin_inset Formula \begin{eqnarray*}
+p(x|\lambda) & = & exp\{\sum_{i=1}^{n}x_{i}log\lambda-\lambda-log(x_{i}!)\}\\
+ & = & exp\{-\sum_{i=1}^{n}log(x_{i}!)\}exp\{\sum_{i=1}^{n}x_{i}log\lambda-\lambda\}\\
+ & = & \prod_{i=1}^{n}x_{i}!\,\, exp\{\sum_{i=1}^{n}x_{i}log\lambda-\lambda\}\end{eqnarray*}
+
+\end_inset
+
+Rewriting things this way shows that:
+\begin_inset Formula \[
+T(x)=\sum_{i=1}^{n}x_{i}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+\eta=log\lambda\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+A(\eta)=e^{\eta}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+h(x)=\prod_{i=1}^{n}x_{i}!\]
+
+\end_inset
+
+The ML criteria then gives:
+\begin_inset Formula \[
+\frac{1}{n}\sum_{i=1}^{n}x_{i}=e^{\eta}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+\frac{1}{n}\sum_{i=1}^{n}x_{i}=\hat{\lambda}\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Let 
+\begin_inset Formula $x_{i}\in R^{d}$
+\end_inset
+
+ be distributed as a multivariate Gaussian with zero-mean with density function:
+\begin_inset Formula \[
+p(x_{i}|\Gamma)=\frac{1}{\sqrt{(2\pi)^{d}det(\Gamma)^{-1}}}exp(-\frac{1}{2}x_{i}^{T}\Gamma x_{i})\]
+
+\end_inset
+
+Find the ML estimate 
+\begin_inset Formula $\hat{\Gamma}\in\mathbb{R}^{dxd}$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Let 
+\begin_inset Formula $x=(x_{1},...,x_{n})$
+\end_inset
+
+.
+ The likelihood function looks like this:
+\begin_inset Formula \begin{eqnarray*}
+p(x|\Gamma) & = & \prod_{i=1}^{n}\frac{1}{\sqrt{(2\pi)^{d}det(\Gamma)^{-1}}}exp(-\frac{1}{2}x_{i}^{T}\Gamma x_{i})\end{eqnarray*}
+
+\end_inset
+
+Taking the log-likelihood gives:
+\begin_inset Formula \[
+l(x|\Gamma)=log\{((2\pi)^{d}det(\Gamma)^{-1})^{-n/2}\}-\frac{1}{2}\sum_{i=1}^{n}x_{i}^{T}\Gamma x_{i}\]
+
+\end_inset
+
+I'll break this up into two functions:
+\begin_inset Formula \begin{eqnarray*}
+h(\Gamma) & = & log\{((2\pi)^{d}det(\Gamma)^{-1})^{-n/2}\}\\
+ & = & -\frac{n}{2}\{dlog2\pi+log\{det(\Gamma)^{-1}\}\\
+g(x,\Gamma) & = & -\frac{1}{2}\sum_{i=1}^{n}x_{i}^{T}\Gamma x_{i}\end{eqnarray*}
+
+\end_inset
+
+If we differentiate 
+\begin_inset Formula $h(\Gamma)$
+\end_inset
+
+ with respect to the matrix 
+\begin_inset Formula $\Gamma,$
+\end_inset
+
+ we get:
+\begin_inset Formula \begin{eqnarray*}
+\frac{\partial h}{\partial\Gamma} & = & \frac{n}{2}\frac{\partial}{\partial\Gamma}[log(det(\Gamma))]\\
+ & = & \frac{n}{2}\Gamma\end{eqnarray*}
+
+\end_inset
+
+Differentiating 
+\begin_inset Formula $g(x,\Gamma)$
+\end_inset
+
+ with respect to 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ gives:
+\begin_inset Formula \begin{eqnarray*}
+\frac{\partial g}{\partial\Gamma} & = & -\frac{1}{2}\frac{\partial}{\partial\Gamma}[\sum_{i=1}^{n}Tr(x_{i}x_{i}^{T}\Gamma)]\\
+ & = & -\frac{1}{2}\sum_{i=1}^{n}x_{i}x_{i}^{T}\end{eqnarray*}
+
+\end_inset
+
+I used two tricks, one was taking the derivative of a log determinant with
+ respect to a matrix, and differentiating the trace of a quadratic form.
+ Both of these tricks were obtained from Ch.
+ 13 of the course manual.
+ Setting the log likelihood to zero and combining these results gives:
+\begin_inset Formula \[
+\frac{1}{n}\sum_{i=1}^{n}x_{i}x_{i}^{T}=\hat{\Gamma}\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Problem
+Assume the parameter 
+\begin_inset Formula $\theta\in\mathbb{R^{d}}$
+\end_inset
+
+ is a random variable 
+\begin_inset Formula $\theta\sim\pi$
+\end_inset
+
+, and the MAP estimate is given as the rescaled posterior likelihood 
+\begin_inset Formula $\frac{1}{n}log\,\, p(\theta|x_{1},...,x_{n})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Suppose 
+\begin_inset Formula $(x_{i}|\theta)\sim\mathcal{N}(\theta,\sigma^{2})$
+\end_inset
+
+, where 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ is fixed, and let 
+\begin_inset Formula $\pi\sim\mathcal{N}(\theta_{0},\tau^{2})$
+\end_inset
+
+, where both 
+\begin_inset Formula $\theta_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $\tau$
+\end_inset
+
+ are fixed.
+ Compute the MAP estimate of 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Let 
+\begin_inset Formula $x=(x_{1},...,x_{n})$
+\end_inset
+
+.
+ The posterior is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+p(\theta|x)\propto p(\theta)p(x|\theta)\]
+
+\end_inset
+
+log posterior is given as:
+\begin_inset Formula \[
+log\, p(\theta|x)\propto log\, p(\theta)+log\, p(x|\theta)\]
+
+\end_inset
+
+where
+\begin_inset Formula \begin{eqnarray*}
+log\, p(x|\theta) & = & log\{(2\pi\sigma^{2})^{-n/2}exp(-\frac{1}{2\sigma^{2}}\sum_{i=1}^{n}(x_{i}-\theta)^{2})\}\\
+ & = & log\{2\pi\sigma^{2})^{-n/2}\}-\frac{1}{2\sigma^{2}}\sum_{i=1}^{n}(x_{i}-\theta)^{2}\\
+ & = & -\frac{1}{2}\, log\{2\pi\sigma^{2}\}-\frac{1}{2\sigma^{2}}\sum_{i=1}^{n}(x_{i}-\theta)^{2}\end{eqnarray*}
+
+\end_inset
+
+and
+\begin_inset Formula \begin{eqnarray*}
+log\, p(\theta) & = & -\frac{1}{2}\, log\{2\pi\tau^{2}\}-\frac{1}{2\tau^{2}}(\theta-\theta_{0})^{2}\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Taking the derivative of the log-likelihood with respect to 
+\begin_inset Formula $\theta$
+\end_inset
+
+ gives:
+\begin_inset Formula \[
+\frac{\partial}{\partial\theta}log\, p(x|\theta)=\frac{1}{\sigma^{2}}\sum_{i=1}^{n}(x_{i}-\theta)\]
+
+\end_inset
+
+and the prior:
+\begin_inset Formula \[
+\frac{\partial}{\partial\theta}\, log\, p(\theta)=\frac{1}{\tau^{2}}(\theta-\theta_{0})\]
+
+\end_inset
+
+Taking the derivative of the posterior and setting it to zero gives:
+\begin_inset Formula \begin{eqnarray*}
+-\frac{1}{\sigma^{2}}\sum_{i=1}^{n}(x_{i}-\theta) & = & \frac{1}{\tau^{2}}(\theta-\theta_{0})\\
+n\theta-\sum_{i=1}^{n}x_{i} & = & \frac{\sigma^{2}}{\tau^{2}}(\theta-\theta_{0})\\
+n\theta-\frac{\sigma^{2}}{\tau^{2}}\theta & = & \sum_{i=1}^{n}x_{i}-\frac{\sigma^{2}}{\tau^{2}}\theta_{0}\\
+\hat{\theta} & = & \left(\frac{\tau^{2}}{\tau^{2}n-\sigma^{2}}\right)\left(\sum_{i=1}^{n}x_{i}-\frac{\sigma^{2}}{\tau^{2}}\theta_{0}\right)\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Compute the ML estimate of 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+This is simply 
+\begin_inset Formula $\hat{\theta}=\frac{1}{n}\sum_{i=1}^{n}x_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+What happens as 
+\begin_inset Formula $n\rightarrow\infty$
+\end_inset
+
+?
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+It's supposed to converge to the ML estimate...
+  There's a missing 
+\begin_inset Formula $n$
+\end_inset
+
+ in the numerator and I have no idea why.
+\end_layout
+
+\end_deeper
+\begin_layout Problem
+Determine which of the following are exponential families, and show that
+ 
+\begin_inset Formula $\nabla_{\eta}A(\eta)=\mathbb{E}[T(x)]$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Multivariate Gaussian with mean 
+\begin_inset Formula $\mu\in\mathbb{R}^{d}$
+\end_inset
+
+ and identity covariance matrix 
+\begin_inset Formula $\Sigma=I$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The density is given as:
+\begin_inset Formula \[
+p(x|\mu,\Sigma)=((2\pi)^{d}|\Sigma|)^{-1/2}exp\{-\frac{1}{2}(x-\mu)^{T}\Sigma^{-1}(x-\mu)\}\]
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\Sigma^{-1}=I$
+\end_inset
+
+ and 
+\begin_inset Formula $|\Sigma|=d$
+\end_inset
+
+.
+ Bringing the coefficient into the exponential gives:
+\begin_inset Formula \[
+p(x|\mu,\Sigma)=exp\{-\frac{1}{2}d\, log(2\pi)-\frac{1}{2}log(d)-\frac{1}{2}(x-\mu)^{T}\Sigma^{-1}(x-\mu)\}\]
+
+\end_inset
+
+Then taking into account 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+
+\begin_inset Formula $\Sigma=I$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+ and expanding the quadratic term gives:
+\begin_inset Formula \begin{eqnarray*}
+p(x|\mu,\Sigma) & = & exp\{-\frac{1}{2}d\, log(2\pi)-\frac{1}{2}log(d)-\frac{1}{2}x^{T}x-x^{T}\mu-\frac{1}{2}\mu^{T}\mu\}\end{eqnarray*}
+
+\end_inset
+
+Reorganizing a bit: 
+\begin_inset Formula \begin{eqnarray*}
+p(x|\mu,\Sigma) & = & exp\{-x^{T}\mu-\frac{1}{2}\mu^{T}\mu-\frac{1}{2}d\, log(2\pi)-\frac{1}{2}log(d)-\frac{1}{2}x^{T}x\}\end{eqnarray*}
+
+\end_inset
+
+Let 
+\begin_inset Formula $h(x)=exp\{-\frac{1}{2}d\, log(2\pi)-\frac{1}{2}log(d)-\frac{1}{2}x^{T}x\}$
+\end_inset
+
+, then we're left with:
+\begin_inset Formula \begin{eqnarray*}
+p(x|\mu,\Sigma) & = & h(x)\, exp\{-x^{T}\mu-\frac{1}{2}\mu^{T}\mu\}\end{eqnarray*}
+
+\end_inset
+
+Then let 
+\begin_inset Formula $T(x)=x$
+\end_inset
+
+, 
+\begin_inset Formula $\eta=-\mu$
+\end_inset
+
+, and 
+\begin_inset Formula $A(\eta)=\frac{1}{2}\eta^{T}\eta$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Moment Generation
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+: For a dataset 
+\begin_inset Formula $x=(x_{1},..,x_{n})$
+\end_inset
+
+, we have 
+\begin_inset Formula $T(x)=\sum_{i=1}^{n}x_{i}$
+\end_inset
+
+, and 
+\begin_inset Formula $A(\eta)=\frac{n}{2}\eta^{T}\eta$
+\end_inset
+
+, so that 
+\begin_inset Formula $\mathbb{E}[T(x)]=\sum_{i=1}^{n}\mathbb{E}[x_{i}]=n\mu$
+\end_inset
+
+ 
+\begin_inset Formula \[
+\nabla_{\eta}A(\eta)=n\eta=n\mu=\mathbb{E}[T(x)]\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Dirichlet distribution with parameter 
+\begin_inset Formula $\alpha\in\mathbb{R}^{K}$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Let 
+\begin_inset Formula $\alpha_{0}=\sum_{i=1}^{K}\alpha_{i}$
+\end_inset
+
+, and 
+\begin_inset Formula $x\in\mathbb{R}^{K}$
+\end_inset
+
+ be such that 
+\begin_inset Formula $\sum_{i=1}^{K}x_{i}=1$
+\end_inset
+
+.
+ The density of 
+\begin_inset Formula $x$
+\end_inset
+
+ under the Dirichlet distribution is:
+\begin_inset Formula \[
+p(x|\alpha)=\frac{1}{\beta(\alpha)}\prod_{i=1}^{K}x_{i}^{\alpha_{i}-1}\]
+
+\end_inset
+
+where
+\begin_inset Formula \[
+\beta(\alpha)=\frac{\prod_{i=1}^{K}\Gamma(\alpha_{i})}{\Gamma(\alpha_{0})}\]
+
+\end_inset
+
+and
+\begin_inset Formula \[
+\Gamma(\alpha_{i})=\int_{0}^{\infty}t^{\alpha_{i}-1}e^{t}\, dt\]
+
+\end_inset
+
+We can rewrite the density as:
+\begin_inset Formula \begin{eqnarray*}
+p(x|\alpha) & = & exp\{log\{\frac{1}{\beta(\alpha)}\prod_{i=1}^{K}x_{i}^{\alpha_{i}-1}\}\}\\
+ & = & exp\{-log\,\beta(\alpha)+\sum_{i=1}^{K}log(x_{i}^{\alpha_{i}-1})\}\\
+ & = & exp\{-log\,\beta(\alpha)+\sum_{i=1}^{K}(\alpha_{i}-1)log(x_{i})\}\end{eqnarray*}
+
+\end_inset
+
+So the Dirichlet distribution is in the exponential family with 
+\begin_inset Formula $T(x)=log(x)$
+\end_inset
+
+, 
+\begin_inset Formula $\eta=\alpha-1$
+\end_inset
+
+, 
+\begin_inset Formula $A(\eta)=log\,\beta(\alpha)=log\,\beta(1+\eta)$
+\end_inset
+
+, and 
+\begin_inset Formula $h(x)=1$
+\end_inset
+
+.
+\begin_inset Newline linebreak
+\end_inset
+
+
+\series bold
+Moment-Generation
+\series default
+: No idea! 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The multinomial distribution with parameter 
+\begin_inset Formula $\theta=(\theta_{1},...,\theta_{K})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Let 
+\begin_inset Formula $x=(x_{1},...,x_{K})$
+\end_inset
+
+ be distributed multi-nomially with 
+\begin_inset Formula $N$
+\end_inset
+
+ trials.
+ Because 
+\begin_inset Formula $\sum_{i=1}^{K}\theta_{i}=1$
+\end_inset
+
+ and 
+\begin_inset Formula $\sum_{i=1}^{K}x_{i}=N$
+\end_inset
+
+, let 
+\begin_inset Formula $\tilde{x}=(x_{1},...,x_{K-1})$
+\end_inset
+
+ and 
+\begin_inset Formula $\tilde{\theta}=(\theta_{1},...,\theta_{K-1})$
+\end_inset
+
+, and get rid of the 
+\begin_inset Formula $K$
+\end_inset
+
+th variables by writing 
+\begin_inset Formula $x_{K}=N-\sum_{i=1}^{K-1}x_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta_{K}=1-\sum_{i=1}^{K-1}\theta_{i}$
+\end_inset
+
+ .
+ We can write the density function as:
+\begin_inset Formula \begin{eqnarray*}
+p(\tilde{x}|\tilde{\theta}) & = & \frac{N!}{\prod_{i=1}^{K}x_{i}!}\prod_{i=1}^{K}\theta_{i}^{x_{i}}\\
+ & = & h(x)\, exp\{log\{\prod_{i=1}^{K}\theta_{i}^{x_{i}}\}\}\\
+ & = & h(x)\, exp\{\sum_{i=1}^{K}log(\theta_{i}^{x_{i}})\}\\
+ & = & h(x)\, exp\{\sum_{i=1}^{K}x_{i}log\theta_{i}\}\\
+ & = & h(x)\, exp\{\sum_{i=1}^{K-1}x_{i}log\theta_{i}+(N-\sum_{j=1}^{K-1}x_{i})log(1-\sum_{j=1}^{K-1}\theta_{j})\}\\
+ & = & h(x)\, exp\{\sum_{i=1}^{K-1}x_{i}log\left(\frac{\theta_{i}}{1-\sum_{j=1}^{K-1}\theta_{j}}\right)+N\, log(1-\sum_{j=1}^{K-1}\theta_{j})\}\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $h(x)=\frac{N!}{\prod_{i=1}^{K}x_{i}!}$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $\eta_{i}=log\left(\frac{\theta_{i}}{1-\sum_{j=1}^{K-1}\theta_{j}}\right)$
+\end_inset
+
+, 
+\begin_inset Formula $T(x_{i})=x_{i}$
+\end_inset
+
+, both defined for 
+\begin_inset Formula $i=1,...,K-1$
+\end_inset
+
+.
+ The relationship between 
+\begin_inset Formula $\eta_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta_{i}$
+\end_inset
+
+ can be inverted:
+\begin_inset Formula \[
+\theta_{i}=\frac{e^{\eta_{i}}}{1+\sum_{j=1}^{K-1}e^{\eta_{j}}}\]
+
+\end_inset
+
+We can then set:
+\begin_inset Formula \begin{eqnarray*}
+A(\eta) & = & -N\, log(1-\sum_{i=1}^{K-1}\theta_{i})\\
+ & = & -N\, log\left(1-\frac{\sum_{j=1}^{K-1}e^{\eta_{j}}}{1+\sum_{j=1}^{K-1}e^{\eta_{j}}}\right)\\
+ & = & -N\, log\left(\frac{1-\sum_{j=1}^{K-1}e^{\eta_{j}}+\sum_{j=1}^{K-1}e^{\eta_{j}}}{1+\sum_{j=1}^{K-1}e^{\eta_{j}}}\right)\\
+ & = & N\, log(1+\sum_{j=1}^{K-1}e^{\eta_{j}})\end{eqnarray*}
+
+\end_inset
+
+
+\series bold
+Moment-Generation
+\series default
+: The expectation of the sufficient statistic is:
+\begin_inset Formula \[
+\mathbb{E}[x_{i}]=N\theta_{i}\]
+
+\end_inset
+
+because the parameter 
+\begin_inset Formula $\theta_{i}$
+\end_inset
+
+ is the fraction of times that category 
+\begin_inset Formula $i$
+\end_inset
+
+ will occur.
+ The partial derivative of 
+\begin_inset Formula $A(\eta)$
+\end_inset
+
+ is:
+\begin_inset Formula \begin{eqnarray*}
+\frac{\partial}{\partial\eta_{i}}A(\eta) & = & N\left(\frac{1}{1+\sum_{j=1}^{K-1}e^{\eta_{j}}}\frac{\partial}{\partial\eta_{i}}[1+\sum_{j=1}^{K-1}e^{\eta_{j}}]\right)\\
+ & = & N\left(\frac{e^{\eta_{i}}}{1+\sum_{j=1}^{K-1}e^{\eta_{j}}}\right)\\
+ & = & N\theta_{i}\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The log normal distribution of 
+\begin_inset Formula $Y$
+\end_inset
+
+, where if 
+\begin_inset Formula $X\sim\mathcal{N}(0,\sigma^{2})$
+\end_inset
+
+, then 
+\begin_inset Formula $Y=e^{X}$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The density function looks like this:
+\begin_inset Formula \[
+p(x|\theta)=exp(\frac{1}{\sqrt{2\pi\sigma^{2}}}exp(-\frac{1}{2\sigma^{2}}x))\]
+
+\end_inset
+
+Although the logarithm of this density function is obviously in the exponential
+ family, the lognormal distribution itself is not, because the terms inside
+ the primary exponential can't be broken down into additive terms.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The Ising model: an undirected graphical model 
+\begin_inset Formula $G=(V,E)$
+\end_inset
+
+, with a binary random vector 
+\begin_inset Formula $X=\{0,1\}^{n}$
+\end_inset
+
+ with distribution 
+\begin_inset Formula $p(x|\theta)\propto exp\{\sum_{s\in V}\theta_{s}x_{s}+\sum_{(s,t)\in E}\theta_{st}x_{s}x_{t}\}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Let 
+\begin_inset Formula $a_{ij}=x_{i}x_{j}$
+\end_inset
+
+, and 
+\begin_inset Formula $T(x)=[x_{1}...x_{n}\,\, a_{ij\in E}]$
+\end_inset
+
+ be a vector of dimension 
+\begin_inset Formula $n+|E|$
+\end_inset
+
+ that contains all values of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ and products of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{j}$
+\end_inset
+
+ for all 
+\begin_inset Formula $(i,j)\in E$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $\eta=[\theta_{1}...\theta_{n}\,\,\theta_{ij\in E}]$
+\end_inset
+
+ be another vector of dimension 
+\begin_inset Formula $n+|E|$
+\end_inset
+
+.
+ We can write the density of the Ising model as:
+\begin_inset Formula \[
+p(x|\eta)=\frac{1}{Z(\eta)}exp\{<T(x),\eta>\}\]
+
+\end_inset
+
+where 
+\begin_inset Formula $Z(\eta)=\sum_{x}exp\{<T(x),\eta>\}$
+\end_inset
+
+ is the normalization function, giving 
+\begin_inset Formula $A(\eta)=-exp\{-log\, Z(\eta)\}$
+\end_inset
+
+.
+\begin_inset Newline linebreak
+\end_inset
+
+
+\series bold
+Moment-Generation
+\series default
+: Taking the partial derivative of 
+\begin_inset Formula $A(\eta)$
+\end_inset
+
+ gives:
+\begin_inset Formula \begin{eqnarray*}
+\frac{\partial}{\partial\eta_{i}}A(\eta) & = & -\frac{\partial}{\partial\eta_{i}}\frac{1}{Z(\eta)}\\
+ & = & \frac{1}{Z(\eta)^{2}}\sum_{x}T(x)_{i}\end{eqnarray*}
+
+\end_inset
+
+Not really sure where I'm going with this...
+\end_layout
+
+\end_deeper
+\begin_layout Problem
+The file 
+\begin_inset Quotes eld
+\end_inset
+
+lms.dat
+\begin_inset Quotes erd
+\end_inset
+
+ contains data 
+\begin_inset Formula $\mathcal{D}=(x^{i},y^{i})$
+\end_inset
+
+ where 
+\begin_inset Formula $x^{i}\in\mathbb{R}^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $y^{i}\in\mathbb{R}$
+\end_inset
+
+, and 
+\begin_inset Formula $N=|D|$
+\end_inset
+
+ the superscript represents the sample #.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Solve the normal equations to find the optimal value of the parameter vector.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Using the R code attached to the email with this homework, I solved the
+ normal equations by first constructing a matrix of features 
+\begin_inset Formula $X=[x^{1}...\, x^{N}]^{T}\in\mathbb{R}^{Nx2}$
+\end_inset
+
+, and a vector of values 
+\begin_inset Formula $y=[y^{1}...\, y^{N}]\in\mathbb{R}^{N}$
+\end_inset
+
+.
+ The optimal parameter 
+\begin_inset Formula $\theta\in\mathbb{R}^{2}$
+\end_inset
+
+ for the linear model 
+\begin_inset Formula $\hat{y}=X\hat{\theta}$
+\end_inset
+
+ is given by solving:
+\begin_inset Formula \[
+X^{T}X\,\hat{\theta}=Xy\]
+
+\end_inset
+
+Using R, the optimal parameters are found to be 
+\begin_inset Formula $\hat{\theta}=[1.04,-0.98]$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Find the eigenvectors and eigenvalues of the covariance matrix, plot the
+ contours of the cost function 
+\begin_inset Formula $J$
+\end_inset
+
+ in the parameter space, centered around the optimal value.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The eigenvectors were computed to be:
+\begin_inset Formula \[
+2.62\left[\begin{array}{c}
+-0.85\\
+0.52\end{array}\right]\,\,\, and\,\,\,1.03\left[\begin{array}{c}
+-0.52\\
+-0.85\end{array}\right]\]
+
+\end_inset
+
+The contours look like this:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/h3_p4_contour.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Initialize the LMS algorithm at 
+\begin_inset Formula $\theta=0$
+\end_inset
+
+ and plot the path taken in the parameter space for three different values
+ of step size 
+\begin_inset Formula $\rho$
+\end_inset
+
+: the inverse of the maximum eigenvalue of the covariance matrix, one half
+ that value, and one quarter of that value.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/h3_p4c.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+A plot of the three paths, with the plus character indicating the optimal
+ solution found using the normal equations.
+ All paths converge somewhere close.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Problem
+Given two probability distributions 
+\begin_inset Formula $p$
+\end_inset
+
+ and 
+\begin_inset Formula $q$
+\end_inset
+
+, defined on a discrete random variable 
+\begin_inset Formula $X=\{0,...,k-1\}$
+\end_inset
+
+, and the KL distance 
+\begin_inset Formula $D(p||q)=\sum_{x=0}^{k-1}p(x)log\frac{p(x)}{q(x)}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Enumerate
+Show that 
+\begin_inset Formula $D(p||q)\geq0$
+\end_inset
+
+ for all 
+\begin_inset Formula $p,q$
+\end_inset
+
+, and 
+\begin_inset Formula $D(p||q)=0$
+\end_inset
+
+ iff 
+\begin_inset Formula $p=q$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+This proof is adapted from Theorem 2.6.3 in Cover and Thomas (2006).
+ Taking the negative of 
+\begin_inset Formula $D(p||q)$
+\end_inset
+
+ gives us the following form:
+\begin_inset Formula \[
+-D(p||q)=\sum_{x=0}^{k-1}p(x)log\left(\frac{q(x)}{p(x)}\right)\]
+
+\end_inset
+
+Let 
+\begin_inset Formula $Y_{x}=\frac{q(x)}{p(x)}$
+\end_inset
+
+ be a random variable, so that 
+\begin_inset Formula $\mathbb{E}_{p}[log\, Y_{x}]=\sum_{x=0}^{k-1}p(x)log\left(\frac{q(x)}{p(x)}\right)=-D(p||q)$
+\end_inset
+
+.
+ Because log is concave, Jensen's inequality implies: 
+\begin_inset Formula \[
+log\,(\mathbb{E}_{p}[Y_{x}])\ge\mathbb{E}_{p}[log\,(Y_{x})]\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we expand things out:
+\begin_inset Formula \begin{eqnarray*}
+log\{\sum_{x=0}^{k-1}p(x)\frac{q(x)}{p(x)}\} & \ge & \sum_{x=0}^{k-1}p(x)log\left(\frac{p(x)}{q(x)}\right)\\
+log\{\sum_{x=0}^{k-1}q(x)\} & \ge & -D(p||q)\\
+log\,1 & \ge & -D(p||q)\\
+0 & \le & D(p||q)\end{eqnarray*}
+
+\end_inset
+
+It's obvious that 
+\begin_inset Formula $D(p||q)=0$
+\end_inset
+
+ when 
+\begin_inset Formula $p(x)=q(x)$
+\end_inset
+
+, but need to show that there are no other values for 
+\begin_inset Formula $p(x)$
+\end_inset
+
+ and 
+\begin_inset Formula $q(x)$
+\end_inset
+
+ that could produce 
+\begin_inset Formula $D(p||q)=0$
+\end_inset
+
+.
+ But I'm running out of time and won't do that...
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Use (a) to show that 
+\begin_inset Formula $H(p)=-\sum_{x}p(x)log\, p(x)$
+\end_inset
+
+ satisfies 
+\begin_inset Formula $H(p)\leq log\, k$
+\end_inset
+
+ for all distributions 
+\begin_inset Formula $p$
+\end_inset
+
+.
+ When does equality hold?
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+This proof is adapted from Theorem 2.6.4 in Cover and Thomas (2006).
+ Let 
+\begin_inset Formula $q(x)=\frac{1}{k}$
+\end_inset
+
+, the uniform distribution.
+ Then:
+\begin_inset Formula \begin{eqnarray*}
+D(p||q) & = & \sum_{x=0}^{k-1}p(x)log\,\frac{p(x)}{q(x)}\\
+ & = & \sum_{x=0}^{k-1}p(x)log\, kp(x)\\
+ & = & \sum_{x=0}^{k-1}p(x)log\, p(x)+\sum_{x=0}^{k-1}p(x)log\, k\end{eqnarray*}
+
+\end_inset
+
+The term on the left is 
+\begin_inset Formula $-H(p)$
+\end_inset
+
+ by definition, and the term on the right is equal to 
+\begin_inset Formula $log\, k$
+\end_inset
+
+ because 
+\begin_inset Formula $\sum_{x=0}^{k-1}p(x)=1$
+\end_inset
+
+.
+ So we have:
+\begin_inset Formula \[
+D(p||q)=-H(p)+log\, k\]
+
+\end_inset
+
+From (a) we know that 
+\begin_inset Formula $D(p||q)\ge0$
+\end_inset
+
+, which implies that:
+\begin_inset Formula \[
+H(p)\le log\, k\]
+
+\end_inset
+
+We know that 
+\begin_inset Formula $D(p||q)=0$
+\end_inset
+
+ iff 
+\begin_inset Formula $p(x)=q(x)$
+\end_inset
+
+, which implies that equality holds only when 
+\begin_inset Formula $p(x)$
+\end_inset
+
+ is the uniform distribution.
+\end_layout
+
+\end_deeper
+\end_body
+\end_document

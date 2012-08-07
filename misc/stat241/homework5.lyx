@@ -1,0 +1,1342 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass amsart
+\begin_preamble
+\renewcommand{\theenumi}{\alph{enumi}} \renewcommand{\theenumii}{\arabic{enumii}} \renewcommand{\labelenumii}{\theenumii.} 
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,positioning,fit}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans default
+\font_typewriter default
+\font_default_family rmdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+CS281: Homework #5
+\end_layout
+
+\begin_layout Author
+Mike Schachter
+\end_layout
+
+\begin_layout Problem
+Given 
+\begin_inset Formula $k$
+\end_inset
+
+ fixed distributions 
+\begin_inset Formula $p_{1}(x)$
+\end_inset
+
+,...,
+\begin_inset Formula $p_{k}(x)$
+\end_inset
+
+, consider the problem of fitting the mixture weights 
+\begin_inset Formula $\theta=(\pi_{1},...,\pi_{k})$
+\end_inset
+
+ to the mixture distribution:
+\begin_inset Formula 
+\[
+p(x|\theta)=\sum_{i=1}^{k}\pi_{i}p_{i}(x)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Prove that given 
+\begin_inset Formula $n$
+\end_inset
+
+ i.i.d.
+ samples of 
+\begin_inset Formula $X$
+\end_inset
+
+, the loglikelihood 
+\begin_inset Formula $l(\theta|\mathcal{D})$
+\end_inset
+
+ is concave in 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Problem
+The log likelihood function for a set of data 
+\begin_inset Formula $x=(x^{1}...x^{n})$
+\end_inset
+
+ is given as:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula 
+\[
+l(x|\theta)=\sum_{i=1}^{n}log\left(\sum_{j=1}^{k}\pi_{j}p_{j}(x^{i})\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+The first derivative of this function with respect to 
+\begin_inset Formula $\pi_{m}$
+\end_inset
+
+ is given as:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula 
+\[
+\frac{\partial l}{\partial\pi_{m}}=\sum_{i=1}^{n}\left(\sum_{j=1}^{k}\pi_{j}p_{j}(x^{i})\right)^{-1}p_{m}(x^{i})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+and the second is:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula 
+\[
+\frac{\partial^{2}l}{\partial\pi_{m}^{2}}=-\sum_{i=1}^{n}\left(p_{m}(x^{i})\right)^{-1}\left(\pi_{m}\right)^{-2}
+\]
+
+\end_inset
+
+Because 
+\begin_inset Formula $p_{m}(x^{i}),\pi_{m}\ge0$
+\end_inset
+
+, the second derivative is always negative, so the log likelihood is concave.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset space ~
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+A common modification of HMMs involve using mixture models for the emission
+ probabilities 
+\begin_inset Formula $p(y_{t}|q_{t})$
+\end_inset
+
+.
+ Assume that 
+\begin_inset Formula $y_{t}\in\mathbb{R}^{d}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Draw the graphical model for the modified HMM.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tikzpicture}
+\end_layout
+
+\begin_layout Plain Layout
+
+[
+\end_layout
+
+\begin_layout Plain Layout
+
+latent/.style={circle,draw},
+\end_layout
+
+\begin_layout Plain Layout
+
+observed/.style={circle,draw,fill=gray!20},
+\end_layout
+
+\begin_layout Plain Layout
+
+empty/.style={circle,draw=white,fill=white}
+\end_layout
+
+\begin_layout Plain Layout
+
+]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node at (4, 0) [latent]   (q0)                  {$q_0$};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node           [observed] (y0) [below=of q0]    {$y_0$};
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node           [latent]   (q1) [right=of q0]    {$q_1$};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node           [observed] (y1) [below=of q1]    {$y_1$};
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node           [empty]   (qdot) [right=of q1]    {$...$};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node           [empty]   (ydot) [below=of qdot]  {$...$};
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node           [latent]   (qT) [right=of qdot]    {$q_T$};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node           [observed] (yT) [below=of qT]    {$y_T$};
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (q0) -- (y0);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (q0) -- (q1);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (q1) -- (y1);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (q1) -- (qdot);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (qdot) -- (ydot);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (qdot) -- (qT);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (qT) -- (yT);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this figure, the sequence occurs from time 
+\begin_inset Formula $0$
+\end_inset
+
+ to 
+\begin_inset Formula $T$
+\end_inset
+
+.
+ The variables 
+\begin_inset Formula $q=(q_{0},...,q_{T})$
+\end_inset
+
+ are the hidden (latent) variables, where 
+\begin_inset Formula $q_{t}\in\{1,...,M\}$
+\end_inset
+
+.
+ We use a binary representation for state so that 
+\begin_inset Formula $q_{t}^{i}\in\{0,1\}$
+\end_inset
+
+, indicating whether 
+\begin_inset Formula $q_{t}$
+\end_inset
+
+ is in state 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ The observed variables are 
+\begin_inset Formula $y=(y_{0},...,y_{T})$
+\end_inset
+
+, where 
+\begin_inset Formula $y_{t}\in\mathbb{R}^{d}$
+\end_inset
+
+.
+ An 
+\begin_inset Formula $MxM$
+\end_inset
+
+ transition matrix 
+\begin_inset Formula $A$
+\end_inset
+
+ governs the transitions between states, where 
+\begin_inset Formula $a_{ij}=p(q_{t+1}^{j}=1|q_{t}^{i}=1)$
+\end_inset
+
+.
+ The emission probability of producing an observed state 
+\begin_inset Formula $y_{t}$
+\end_inset
+
+ given a hidden state 
+\begin_inset Formula $q_{t}$
+\end_inset
+
+ is a mixture of Gaussians:
+\begin_inset Formula 
+\[
+p(y_{t}|q_{t}^{j}=1)=\sum_{i=1}^{M}\pi_{i}\mathcal{N}(y_{t}|\mu_{i},\Sigma_{i})^{q_{t}^{i}}=\pi_{j}\mathcal{N}(y_{t}|\mu_{j},\Sigma_{j})=f_{j}(y_{t})
+\]
+
+\end_inset
+
+The initial state 
+\begin_inset Formula $q_{0}$
+\end_inset
+
+ has a distribution 
+\begin_inset Formula $\omega=(\omega_{1},...,\omega_{M})$
+\end_inset
+
+, where 
+\begin_inset Formula $\sum_{i=1}^{M}\omega_{i}=1$
+\end_inset
+
+ and 
+\begin_inset Formula $\omega_{i}=p(q_{0}^{i}=1)$
+\end_inset
+
+.
+ As in the course book, we let 
+\begin_inset Formula $\omega_{q_{0}}$
+\end_inset
+
+ be indexed by whatever the value of 
+\begin_inset Formula $q_{0}$
+\end_inset
+
+ actually is; the same goes for something like 
+\begin_inset Formula $a_{q_{t}q_{t+1}}$
+\end_inset
+
+.
+ The parameters of the model at iteration 
+\begin_inset Formula $k$
+\end_inset
+
+ are 
+\begin_inset Formula $\theta^{(k)}=(\omega^{(k)},\pi^{(k)},A^{(k)},\mu^{(k)},\Sigma^{(k)})$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Write the expected complete log likelihood for the model and identify the
+ expecations that are needed in the E step.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The complete likelihood is given as:
+\begin_inset Formula 
+\[
+p(q,y)=\omega_{q_{0}}\prod_{t=0}^{T-1}a_{q_{t}q_{t+1}}\prod_{t=0}^{T}f_{q_{t}}(y_{t})
+\]
+
+\end_inset
+
+Taking the log gives:
+\begin_inset Formula 
+\[
+l(q,y)=log\left(\omega_{q_{0}}\right)+\sum_{t=0}^{T-1}log\left(a_{q_{t}q_{t+1}}\right)+\sum_{t=0}^{T}log\left(f_{q_{t}}(y_{t})\right)
+\]
+
+\end_inset
+
+We need to take the expectation of the complete log likelihood with respect
+ a distribution.
+ For this step, we will have a set of fixed parameters 
+\begin_inset Formula $\theta^{(k)}$
+\end_inset
+
+, and take the expectation with respect to the density 
+\begin_inset Formula $r=p(q|y,\theta^{(k)})$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\left\langle l(q,y)\right\rangle _{r}=\left\langle log\left(\omega_{q_{0}}\right)\right\rangle _{r}+\left\langle \sum_{t=0}^{T-1}log\left(a_{q_{t}q_{t+1}}\right)\right\rangle _{r}+\left\langle \sum_{t=0}^{T}log\left(f_{q_{t}}(y_{t})\right)\right\rangle _{r}
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Outline an algorithm for computing the E step, relating it to the standard
+ alpha and beta recursions.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Much of the notation and ideas shown here come from Jeff Bilm's 
+\begin_inset Quotes eld
+\end_inset
+
+A Gentle Tutorial of the EM Algorithm and its Application to Parameter Estimatio
+n for Gaussian Mixture and Hidden Markov Models
+\begin_inset Quotes erd
+\end_inset
+
+ (1998).
+ We can evaluate each expectation individually.
+ First the initial state:
+\begin_inset Formula 
+\[
+\left\langle log\left(\omega_{q_{0}}\right)\right\rangle _{r}=\sum_{q}p(q|y,\theta^{(k)})log(\omega_{q_{0}})=\sum_{i=1}^{M}\omega_{i}^{(k)}log(\omega_{i})
+\]
+
+\end_inset
+
+The summation over all possible 
+\begin_inset Formula $q$
+\end_inset
+
+ contains all possible 
+\begin_inset Formula $q_{0}$
+\end_inset
+
+, so we exchange it for a sum over all each of 
+\begin_inset Formula $M$
+\end_inset
+
+ states.
+ Next we can deal with the second expectation:
+\begin_inset Formula 
+\begin{eqnarray*}
+\left\langle \sum_{t=0}^{T-1}log\left(a_{q_{t}q_{t+1}}\right)\right\rangle _{r} & = & \sum_{q}p(q|y,\theta^{(k)})\sum_{t=0}^{T-1}log\left(a_{q_{t}q_{t+1}}\right)\\
+ & = & \sum_{i,j=1}^{m}\sum_{t=0}^{T-1}log\left(a_{ij}\right)p(q_{t}^{i}=1,q_{t+1}^{j}=1|y,\theta^{(k)})\\
+ & = & \sum_{i,j=1}^{m}\sum_{t=0}^{T-1}log\left(a_{ij}\right)\xi_{t}^{ij(k)}
+\end{eqnarray*}
+
+\end_inset
+
+Lastly, we can deal with the emission term:
+\begin_inset Formula 
+\begin{eqnarray*}
+\left\langle \sum_{t=0}^{T}log\left(f_{q_{t}}(y_{t})\right)\right\rangle _{r} & = & \sum_{q}p(q|y,\theta^{(k)})\sum_{t=0}^{T}log\left(f_{q_{t}}(y_{t})\right)\\
+ & = & \sum_{i=1}^{M}\sum_{t=0}^{T}log\left(f_{q_{t}}(y_{t})\right)p(q_{t}^{i}=1|y,\theta^{(k)})
+\end{eqnarray*}
+
+\end_inset
+
+Now we'll relate things to the alpha and beta step.
+ It's well known that the probability 
+\begin_inset Formula $p(q_{t}|y,\theta)$
+\end_inset
+
+ can be written in terms of recursive functions 
+\begin_inset Formula $\alpha(q_{t})$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta(q_{t})$
+\end_inset
+
+, where:
+\begin_inset Formula 
+\[
+\alpha(q_{t+1})=p(y_{0:t},q_{t})=\sum_{q_{t}'}\alpha(q_{t})a_{q_{t}q_{t+1}}p(y_{t+1}|q_{t+1})
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\beta(q_{t})=p(y_{t+1:T}|q_{t})=\sum_{q_{t+1}}\beta(q_{t+1})a_{q_{t}q_{t+1}}p(y_{t+1}|q_{t+1})
+\]
+
+\end_inset
+
+The alpha recursion and beta recursion are initialized with:
+\begin_inset Formula 
+\[
+\alpha(q_{0})=p(y_{0}|q_{0})\omega_{q_{0}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\beta(q_{T})=1
+\]
+
+\end_inset
+
+Using these definitions gives:
+\begin_inset Formula 
+\[
+p(q_{t}|y,\theta)=\frac{\alpha(q_{t})\beta(q_{t})}{\sum_{q_{t}}\alpha(q_{t})\beta(q_{t})}
+\]
+
+\end_inset
+
+The term 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $p(q_{t}|y,\theta)$
+\end_inset
+
+ is used in the expecation of the third term in the expected complete log
+ likelihood.
+ Another probability that can be written in terms of alpha and beta functions
+ is:
+\begin_inset Formula 
+\[
+p(q_{t},q_{t+1})=\frac{\alpha(q_{t})\beta(q_{t+1})a_{q_{t}q_{t+1}}p(y_{t+1}|q_{t+1})}{\sum_{q_{t}}\alpha(q_{t})\beta(q_{t})}
+\]
+
+\end_inset
+
+This is used in the second term of the expected complete log likelihood.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Write down the equations that implement the M step.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Setting to zero the derivative of the first term with respect to 
+\begin_inset Formula $\omega_{j}$
+\end_inset
+
+, with Lagrange constraint 
+\begin_inset Formula $\sum_{i=1}^{M}\omega_{i}=1$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial}{\partial\omega_{j}}\left[\sum_{i=1}^{M}\omega_{i}^{(k)}log(\omega_{i})-\lambda(1-\sum_{i=1}^{M}\omega_{i})\right] & = & 0\\
+\omega_{j}^{(k+1)} & = & \frac{\omega_{j}^{(k)}}{\lambda}\\
+\omega_{j}^{(k+1)} & = & \omega_{j}^{(k)}
+\end{eqnarray*}
+
+\end_inset
+
+(Taking into account all 
+\begin_inset Formula $\omega_{i}$
+\end_inset
+
+ gives a Lagrange multiplier of 
+\begin_inset Formula $\lambda=1$
+\end_inset
+
+).
+ Doing the same thing to the second term gives:
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial}{\partial a_{xy}}\left[\sum_{i,j=1}^{m}\sum_{t=0}^{T-1}log\left(a_{ij}\right)\xi_{t}^{ij(k)}-\lambda(1-\sum_{j=1}^{M}a_{xj})\right] & = & 0\\
+\frac{1}{a_{xy}}\sum_{t=0}^{T-1}\xi_{t}^{xy(k)} & = & \lambda\\
+a_{xy}^{(k+1)} & = & \frac{\sum_{t=0}^{T-1}\xi_{t}^{xy(k)}}{\sum_{j=1}^{M}\sum_{t=0}^{T-1}\xi_{t}^{xj(k)}}
+\end{eqnarray*}
+
+\end_inset
+
+The third term needs to be differentiated with respect to 
+\begin_inset Formula $\mu_{x}$
+\end_inset
+
+ , 
+\begin_inset Formula $\Sigma_{x}$
+\end_inset
+
+, and 
+\begin_inset Formula $\pi_{x}$
+\end_inset
+
+.
+ First, 
+\begin_inset Formula $\mu_{x}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial}{\partial\mu_{x}}\left[\sum_{i=1}^{M}\sum_{t=0}^{T}log\left(f_{q_{t}}(y_{t})\right)p(q_{t}^{i}=1|y,\theta^{(k)})\right] & = & 0\\
+\frac{\partial}{\partial\mu_{x}}\left[\sum_{i=1}^{M}\sum_{t=0}^{T}-log\left((2\pi)^{n/2}|\Sigma|^{1/2}\right)\sum_{j=1}^{M}\left(\frac{1}{2}(y_{t}-\mu_{j})^{T}\Sigma_{j}^{-1}(y_{t}-\mu_{j})^{T}+log(\pi_{j})\right)p(q_{t}^{i}=1|y,\theta^{(k)})\right] & = & 0\\
+\sum_{i=1}^{M}\sum_{t=0}^{T}\left(\frac{\partial}{\partial\mu_{x}}\left[(y_{t}-\mu_{j})^{T}\Sigma_{j}^{-1}(y_{t}-\mu_{j})^{T}\right]\right)p(q_{t}^{i}=1|y,\theta^{(k)}) & = & 0\\
+\sum_{i=1}^{M}\sum_{t=0}^{T}\left((y_{t}-\mu_{x})^{T}\Sigma_{x}^{-1}\right)p(q_{t}^{i}=1|y,\theta^{(k)}) & = & 0
+\end{eqnarray*}
+
+\end_inset
+
+Well...
+ that's probably not right.
+ Gonna stop here...
+ It's been a fun semester though!
+\end_layout
+
+\end_deeper
+\begin_layout Problem
+Two 2-dimensional data sets supplied in pca1.dat and pca2.dat are generated
+ by choosing a line through the origin and then choosing random samples
+ from a univariate Gaussian distribution along that line.
+ These were corrupted by (1) using an additive two-dimensional Gaussian
+ with equal covariances in the 
+\begin_inset Formula $y_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $y_{2}$
+\end_inset
+
+ directions (pca1.dat) and (2) by using additive two-dimensional Gaussian
+ with greater covariance in the 
+\begin_inset Formula $y_{2}$
+\end_inset
+
+ than in the 
+\begin_inset Formula $y_{1}$
+\end_inset
+
+ direction (pca2.dat).
+\end_layout
+
+\begin_layout Enumerate
+Write an R implementation of PCA.
+ For each data set compute the sample covariance matrix, determine the principle
+ eigenvector, project that data onto the corresponding subspace.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+See the figures for part (c) of this problem and the script 
+\begin_inset Quotes eld
+\end_inset
+
+homework5_mschachter.R
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Write an R implementation of factor analysis using the EM algorithm discussed
+ in chapter 14 and in class.
+ Once the parameters are determined, for each data point compute the posterior
+ probability 
+\begin_inset Formula $p(x|y)$
+\end_inset
+
+; the factor analysis equivalent of projecting onto the principle subspace.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The figure in part (c) has this.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Compute the fits for both data sets and plot the resulting projections.
+ What changes and what stays the same?
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/prob53_pca1.png
+	lyxscale 50
+	scale 35
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename images/prob53_pca2.png
+	lyxscale 50
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+The left column is for pca1.dat, the right for pca2.dat.
+ The top histograms are 1D projections from the top eigenvector of PCA.
+ The second row are histograms for 1D projections of factor analysis.
+ The third column is the posterior probability 
+\begin_inset Formula $p(x|y)$
+\end_inset
+
+ from factor analysis.
+ Note in the left column that the means and standard deviations of the projectio
+ns are very similar between PCA and factor analysis.
+ The right column, the data for pca2.dat, shows that PCA projects differently
+ than factor analysis.
+ The fits are as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+pca1.dat
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PCA
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Factor Analysis
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Lambda$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\begin{array}{c}
+0.69\\
+0.72
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\begin{array}{c}
+0.68\\
+0.84
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\begin{array}{cc}
+1 & 0\\
+0 & 1
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\begin{array}{cc}
+0.29 & 0\\
+0 & 0.1
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+pca2.dat
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PCA
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Factor Analysis
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Lambda$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\begin{array}{c}
+0.16\\
+0.99
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\begin{array}{c}
+0.54\\
+1.09
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\begin{array}{cc}
+1 & 0\\
+0 & 1
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\begin{array}{cc}
+0.44 & 0\\
+0 & 4.21
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Consider an Ising model with binary variables 
+\begin_inset Formula $X_{s}\in\{-1,1\}$
+\end_inset
+
+ and factorization of the form 
+\begin_inset Formula $p(x;\theta)\propto exp\{\sum_{s\in V}\theta_{s}x_{s}+\sum_{(s,t)\in E}\theta_{st}x_{s}x_{t}\}$
+\end_inset
+
+.
+ Also assume a 2D grid with toroidal boundary conditions.
+\end_layout
+
+\begin_layout Enumerate
+Derive the Gibb's sampling updates for the model, implement with 
+\begin_inset Formula $\theta_{st}=0.2$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta_{s}=0.2+(-1)^{s}$
+\end_inset
+
+.
+ Run a burn in period of 1000 iterations, then sample for 1000 iterations,
+ forming Monte Carlo estimates 
+\begin_inset Formula $\hat{\mu}_{s}$
+\end_inset
+
+ of the moments 
+\begin_inset Formula $\mathbb{E}[X_{s}]$
+\end_inset
+
+ at each node.
+ Output a 7x7 matrix of the estimated moments, repeating a few times to
+ provide an idea of variability in the estimate
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+First let's derive the Gibb's update.
+ In order to do so, we need do determine 
+\begin_inset Formula $p(x_{k}=1|N(x_{k}))$
+\end_inset
+
+, where 
+\begin_inset Formula $x_{k}$
+\end_inset
+
+ is the node being updated, and 
+\begin_inset Formula $N(x_{k})$
+\end_inset
+
+ is the set of neighbors.
+ We can apply Bayes rule to give:
+\begin_inset Formula 
+\[
+p(x_{k}|N(x_{k}))=\frac{p(N(x_{k}),x_{k})}{p(N(x_{k})|x_{k}=1)+p(N(x_{k})|x_{k}=0)}
+\]
+
+\end_inset
+
+The probabilities in the numerator and denominator can be expanded using
+ marginalization:
+\begin_inset Formula 
+\begin{eqnarray*}
+p(N(x_{k})|x_{k}) & \propto & \sum_{x}exp\{\sum_{s\in V}\theta_{s}x_{s}+\sum_{(s,t)\in E}\theta_{st}x_{s}x_{t}\}\\
+ & \propto & exp\{\sum_{s\in N(x_{k})}\theta_{s}x_{s}+\sum_{(s,t)\in N(x_{k})}\theta_{st}x_{s}x_{t}\}\left(\sum_{x}exp\{\sum_{s\notin N(x_{k})}\theta_{s}x_{s}+\sum_{(s,t)\notin N(x_{k})}\theta_{st}x_{s}x_{t}\}\right)
+\end{eqnarray*}
+
+\end_inset
+
+We separate out the terms that belong to 
+\begin_inset Formula $N(x_{k})$
+\end_inset
+
+ and ones that don't.
+ We can use this approach for 
+\begin_inset Formula $p(x_{k}|N(x_{k}))$
+\end_inset
+
+ to get:
+\begin_inset Formula 
+\begin{eqnarray*}
+p(x_{k}=1|N(x_{k})) & = & \frac{p(N(x_{k}),x_{k}=1)}{p(N(x_{k})|x_{k}=1)+p(N(x_{k})|x_{k}=0)}\\
+ & = & \left(1+\frac{p(N(x_{k})|x_{k}=0)}{p(N(x_{k}),x_{k}=1)}\right)^{-1}\\
+ & = & \left(1+\frac{1}{exp\{\theta_{k}x_{k}+\sum_{t\in N(x_{k})}\theta_{kt}x_{k}x_{t}\}}\right)^{-1}\\
+ & = & \left(1+exp\{\theta_{k}x_{k}+\sum_{t\in N(x_{k})}\theta_{kt}x_{k}x_{t}\}\right)^{-1}
+\end{eqnarray*}
+
+\end_inset
+
+See part (b) for plots of the mean estimations and comparisons with the
+ mean-field approach.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Derive the naive mean-field updates and implement them.
+ Compute the average difference in absolute value between the mean field
+ moments and the Gibb's estimates.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/gibbs_ising.png
+	lyxscale 50
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Left column: estimates using Gibbs sampling (top) and mean-field estimates
+ (bottom).
+ Right column: standard deviation of Gibb's estimates for 10 samples (top);
+ absolute difference between Gibbs and mean-field samples (bottom).
+ Average absolute difference is reported as 0.64.
+\end_layout
+
+\end_deeper
+\end_body
+\end_document

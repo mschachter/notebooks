@@ -1,0 +1,1626 @@
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass amsart
+\use_default_options false
+\begin_removed_modules
+eqs-within-sections
+figs-within-sections
+\end_removed_modules
+\begin_modules
+theorems-ams
+\end_modules
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\spacing onehalf
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 1
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Stat 241: Homework #2
+\end_layout
+
+\begin_layout Author
+Mike Schachter (mike.schachter@gmail.com)
+\end_layout
+
+\begin_layout Problem
+Consider an undirected cycle, where each node can take on 
+\begin_inset Formula $K$
+\end_inset
+
+ potential states.
+\end_layout
+
+\begin_layout Paragraph*
+a)
+\series medium
+ Devise an algorithm for computing all single node marginals using SUM-PRODUCT
+ and conditioning.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/h2_p1a.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\series bold
+Figure 1
+\series default
+: An undirected 4-cycle on the left.
+ When node 1 is conditioned on, we get the graph on the right, the dotted
+ lines indicate the cycle being disconnected and turned into a chain.
+ The arrowed edges represent messages sent between nodes in the SUM-PRODUCT
+ algorithm.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph*
+
+\series medium
+Consider a 4-cycle 
+\begin_inset Formula $G$
+\end_inset
+
+ with cliques 
+\begin_inset Formula $\mathcal{C}=\{(x_{1},x_{2}),(x_{2},x_{3}),(x_{3},x_{4}),(x_{4},x_{1})\}$
+\end_inset
+
+, and clique potentials 
+\begin_inset Formula $\psi_{12}$
+\end_inset
+
+,
+\begin_inset Formula $\psi_{23}$
+\end_inset
+
+,
+\begin_inset Formula $\psi_{34}$
+\end_inset
+
+,
+\begin_inset Formula $\psi_{41}$
+\end_inset
+
+, where each potential is parameterized by it's subscripts.
+ The graph 
+\begin_inset Formula $G$
+\end_inset
+
+ has the joint distribution 
+\begin_inset Formula $p(x_{1}x_{2}x_{3}x_{4})=\frac{1}{Z}\psi_{12}\psi_{23}\psi_{34}\psi_{41}$
+\end_inset
+
+.
+ Suppose we condition on 
+\begin_inset Formula $x_{1}=\bar{x}_{1}$
+\end_inset
+
+, this breaks the 4-cycle into a chain by making clique potentials 
+\begin_inset Formula $\psi_{12}$
+\end_inset
+
+ and 
+\begin_inset Formula $\psi_{41}$
+\end_inset
+
+ only dependent on 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{4}$
+\end_inset
+
+, respectively.
+\end_layout
+
+\begin_layout Paragraph*
+
+\series medium
+The evidence probability 
+\begin_inset Formula $p(x_{1}=\bar{x}_{1})$
+\end_inset
+
+ can be computed as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+p(\bar{x}_{1})=\frac{1}{Z}\sum_{x_{2},x_{3},x_{4}}\psi_{12}\psi_{23}\psi_{34}\psi_{41}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}\sum_{x_{3},x_{4}}\psi_{34}\psi_{41}\sum_{x_{2}}\psi_{12}\psi_{23}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}\sum_{x_{3},x_{4}}\psi_{34}\psi_{41}m_{23}(x_{3},\bar{x}_{1})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}\sum_{x_{4}}\psi_{41}m_{34}(x_{2},\bar{x}_{1})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}m_{41}(\bar{x}_{1})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where message values are given as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+m_{23}(x_{3},\bar{x}_{1})=\sum_{x_{2}}\psi_{12}\psi_{23}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+m_{34}(x_{4},\bar{x}_{1})=\sum_{x_{3}}\psi_{34}m_{23}(x_{3},\bar{x}_{1})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+m_{41}(\bar{x}_{1})=\sum_{x_{4}}\psi_{41}m_{32}(x_{2},\bar{x}_{1})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $m_{41}$
+\end_inset
+
+ is a message 
+\begin_inset Quotes eld
+\end_inset
+
+sent
+\begin_inset Quotes erd
+\end_inset
+
+ to conditioned node 
+\begin_inset Formula $\bar{x}_{1}$
+\end_inset
+
+.
+ We can compute this quantity for each of 
+\begin_inset Formula $K$
+\end_inset
+
+ values of 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+ to get the marginal probability 
+\begin_inset Formula $p(x_{1})$
+\end_inset
+
+.
+ Given a specific value 
+\begin_inset Formula $x_{1}=\bar{x}_{1}$
+\end_inset
+
+, we can compute conditional marginal probabilities for all other nodes
+ in the cycle:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+p(x_{2}|\bar{x}_{1})=\frac{1}{Z}\sum_{x_{3},x_{4}}\psi_{12}\psi_{23}\psi_{34}\psi_{41}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}\sum_{x_{3}}\psi_{12}\psi_{23}\sum_{x_{4}}\psi_{34}\psi_{41}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}\sum_{x_{3}}\psi_{12}\psi_{23}m_{43}(x_{3},\bar{x}_{1})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}\psi_{12}m_{32}(x_{2},\bar{x}_{1})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+p(x_{3}|\bar{x}_{1})=\frac{1}{Z}\sum_{x_{2},x_{4}}\psi_{12}\psi_{23}\psi_{34}\psi_{41}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}\sum_{x_{2}}\psi_{12}\psi_{23}m_{43}(x_{3},\bar{x}_{1})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}m_{23}(x_{3},\bar{x}_{1})m_{43}(x_{3},\bar{x}_{1})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+p(x_{4}|\bar{x}_{1})=\frac{1}{Z}\sum_{x_{2},x_{3}}\psi_{12}\psi_{23}\psi_{34}\psi_{41}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}\sum_{x_{3}}\psi_{34}\psi_{41}\sum_{x_{2}}\psi_{12}\psi_{23}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}\sum_{x_{3}}\psi_{34}\psi_{41}m_{23}(x_{3},\bar{x}_{1})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}\psi_{41}\sum_{x_{3}}\psi_{34}m_{23}(x_{3},\bar{x}_{1})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\frac{1}{Z}\psi_{41}m_{34}(x_{3},\bar{x}_{1})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+By writing these out we can see that messages can be re-used across conditioned-
+marginal computations.
+ Since we can compute the marginal 
+\begin_inset Formula $p(x_{1})$
+\end_inset
+
+ from repeated application of the first equation for all 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+, the law of total probability can be used to compute the unconditioned
+ marginals for 
+\begin_inset Formula $x_{2},x_{3},x_{4}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+p(x_{i\ne1})=\sum_{j=1}^{K}p(x_{i}|x_{1}=j)p(x_{1}=j)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+b)
+\series default
+ What is the computational complexity of using the conditioned-cutset approach
+ vs.
+ using the junction tree algorithm?
+\end_layout
+
+\begin_layout Standard
+Let's start by computing the complexity for (a).
+ Computing the conditioned-marginal 
+\begin_inset Formula $p(x_{1}=\bar{x}_{1})$
+\end_inset
+
+ requires 
+\begin_inset Formula $3$
+\end_inset
+
+ nested summations of 
+\begin_inset Formula $K$
+\end_inset
+
+ terms, with a complexity of 
+\begin_inset Formula $O(K^{3})$
+\end_inset
+
+.
+ To compute 
+\begin_inset Formula $p(x_{1}),$
+\end_inset
+
+ we must compute 
+\begin_inset Formula $K$
+\end_inset
+
+ conditioned-marginals, increasing complexity to 
+\begin_inset Formula $O(K^{4})$
+\end_inset
+
+.
+ Computing 
+\begin_inset Formula $p(x_{2}|\bar{x}_{1})$
+\end_inset
+
+ requires 
+\begin_inset Formula $O(K^{2})$
+\end_inset
+
+ operations, and these are nested within the summation that uses total probabili
+ty to compute 
+\begin_inset Formula $p(x_{2})$
+\end_inset
+
+, bringing the total order of complexity of computing 
+\begin_inset Formula $p(x_{2})$
+\end_inset
+
+ to 
+\begin_inset Formula $K^{3}$
+\end_inset
+
+.
+ The same holds for 
+\begin_inset Formula $p(x_{3}$
+\end_inset
+
+) and 
+\begin_inset Formula $p(x_{4})$
+\end_inset
+
+.
+ So the total number of additions performed for all 4 marginals is something
+ like 
+\begin_inset Formula $K^{4}+3K^{3}$
+\end_inset
+
+.
+ In the general case of an 
+\begin_inset Formula $N$
+\end_inset
+
+-cycle, the marginal for the node conditioned on is 
+\begin_inset Formula $O(K^{N})$
+\end_inset
+
+, but every other marginal will still be 
+\begin_inset Formula $O(K^{3})$
+\end_inset
+
+, giving an overall complexity in the general case of 
+\begin_inset Formula $O(K^{N}+NK^{3})$
+\end_inset
+
+, exponential in 
+\begin_inset Formula $N$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For the junction tree algorithm: intuitively from looking at small 4, and
+ 5 cycles, the biggest clique that arises during 
+\begin_inset Quotes eld
+\end_inset
+
+sensible
+\begin_inset Quotes erd
+\end_inset
+
+ triangulations is of size 3.
+ From wild speculation and extrapolation on these small cycles, the number
+ of maximal cliques is 
+\begin_inset Formula $N-2$
+\end_inset
+
+ for an 
+\begin_inset Formula $N$
+\end_inset
+
+-cycle.
+ During the running of the junction tree algorithm, each clique node contains
+ 3 or less elements, each separator contains 2 or less elements.
+ Each separator is updated at most twice, so each separator update is less
+ than or equal to 
+\begin_inset Formula $O(K^{2})$
+\end_inset
+
+.
+ Each clique node update is neglible in the context of separator updates,
+ something like 
+\begin_inset Formula $O(2(N-2))$
+\end_inset
+
+.
+ So, excluding the triangulation step, the total complexity of the junction
+ tree algorithm for an 
+\begin_inset Formula $N$
+\end_inset
+
+-cycle could be at most something like 
+\begin_inset Formula $O(2(K^{2}-N-2))$
+\end_inset
+
+, based on aforementioned speculation.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Outline the junction tree construction for an undirected tree 
+\begin_inset Formula $G=(V,E)$
+\end_inset
+
+ parameterized with pairwise potentials 
+\begin_inset Formula $\psi_{st}(x_{s},x_{t})$
+\end_inset
+
+ for 
+\begin_inset Formula $(s,t)\in E$
+\end_inset
+
+.
+ Derive the SUM-PRODUCT algorithm from the junction tree propagation rules.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/h2_p2_g1.png
+	scale 50
+
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Graphics
+	filename images/h2_p2_g2.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\series bold
+Figure 2
+\series default
+: Two trees and their corresponding junction trees.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Construction
+\series default
+ 
+\series bold
+of Junction Tree:
+\end_layout
+
+\begin_layout Enumerate
+Create unconnected clique nodes from all pairwise cliques.
+\end_layout
+
+\begin_layout Enumerate
+Connect clique nodes containing leaves to the clique nodes that contain
+ their parent, adding a separator set on the edge that contains the parent.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Connect all clique nodes that contain only non-leaf nodes to eachother,
+ so as long as they have a non-empty intersection.
+ Create separators between them that contain the intersection.
+\end_layout
+
+\begin_layout Standard
+Note that all clique nodes contain two nodes of the original graph, and
+ at least one of them is a non-leaf node.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Propagation Rules:
+\end_layout
+
+\begin_layout Enumerate
+Initialize all separators to 
+\begin_inset Formula $1$
+\end_inset
+
+, i.e.
+ set 
+\begin_inset Formula $\phi_{j}=1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Have each leaf node send a message to it's parent.
+ Let 
+\begin_inset Formula $C=(a,b)$
+\end_inset
+
+ be the leaf node and 
+\begin_inset Formula $P=(a,c)$
+\end_inset
+
+ the parent node.
+ The separator contains 
+\begin_inset Formula $S=C\cap P=(a)$
+\end_inset
+
+.
+ The first separator update is accomplished as follows:
+\begin_inset Formula \[
+\phi_{S}^{(1)}=\sum_{b}\psi_{ab}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+\psi_{ac}^{(1)}=\phi_{S}^{(1)}\psi_{ac}=(\sum_{b}\psi_{ab})\psi_{ac}\]
+
+\end_inset
+
+After this, all non-leaf clique nodes will be marginalized with respect
+ to their leaf-node-containing children.
+ To be more formal, for a given clique non-leaf clique node 
+\begin_inset Formula $K$
+\end_inset
+
+, let 
+\begin_inset Formula $\mathcal{C}_{K}$
+\end_inset
+
+ be the set of 
+\begin_inset Formula $K$
+\end_inset
+
+'s neighbors that contain leaf nodes of the original tree.
+ After this step, the potential function of a non-clique node will be given
+ as:
+\begin_inset Formula \[
+\psi_{K}^{(1)}=(\prod_{J\in\mathcal{C}_{I}}\sum_{J\smallsetminus K}\psi_{J})\psi_{K}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Have each non-leaf node in the junction tree send a message to another non-leaf
+ node once it's received messages from all it's neighbors, using the same
+ propagation rules as described above.
+ If 
+\begin_inset Formula $K$
+\end_inset
+
+ and 
+\begin_inset Formula $L$
+\end_inset
+
+ are two non-leaf nodes sharing a separator 
+\begin_inset Formula $M=K\cap L$
+\end_inset
+
+, 
+\begin_inset Formula $K$
+\end_inset
+
+ sends a message to 
+\begin_inset Formula $L$
+\end_inset
+
+ with the following update:
+\begin_inset Formula \[
+\phi_{M}^{(2)}=\sum_{J\smallsetminus M}\psi_{K}^{(1)}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+\psi_{J}^{(2)}=\phi_{M}^{(2)}\psi_{L}^{(1)}\]
+
+\end_inset
+
+Make all non-leaf clique nodes in the junction tree exchange messages with
+ eachother in this manner.
+ Because each non-leaf clique node acts as a cutset between subtrees in
+ the junction tree, this process will exchange marginals across subtrees,
+ and these marginals are now contained in the non-leaf nodes.
+ The non-leaf clique nodes are now completely marginalized.
+\end_layout
+
+\begin_layout Enumerate
+Propagate messages from all non-leaf clique nodes to their children that
+ contain leaf nodes in the original graph.
+ This process will propagate all marginals from subtrees separated by the
+ non-leaf clique nodes, and thus marginalize all the leaf clique nodes.
+ Each separator has been updated twice.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/h2_p2_g3.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\series bold
+Figure 3
+\series default
+: Propagation steps for a tree's junction tree.
+ Blue corresponds to step (2), red to step (3), green to step (4).
+ Filled clique nodes correspond to when the node's contents have changed.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Derivation of SUM-PRODUCT Algorithm:
+\end_layout
+
+\begin_layout Standard
+By the end of step (4), each clique node contains the joint marginal potential
+ for clique 
+\begin_inset Formula $(s,t),$
+\end_inset
+
+such that 
+\begin_inset Formula \[
+p(s,t)=\frac{1}{Z}\psi_{st}^{(final)}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To get single node marginals we marginalize the clique potentials:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+p(s)=\frac{1}{Z}\sum_{t}\psi_{st}^{(final)}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we expand out the 
+\begin_inset Formula $\psi$
+\end_inset
+
+ for a given clique node in Figure (3), such as 
+\begin_inset Formula $(7,8)$
+\end_inset
+
+:
+\begin_inset Formula \[
+p(x_{8})=\frac{1}{Z}\sum_{x_{7}}\psi_{78}^{(final)}=\frac{1}{Z}\sum_{x_{7}}\psi_{78}\sum_{x_{5}}\psi_{57}\sum_{x_{3}}\psi_{35}\sum_{x_{6}}\psi_{56}\sum_{x_{1}}\psi_{13}\sum_{x_{4}}\psi_{34}\sum_{x_{2}}\psi_{23}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Each summation term corresponds to a message in the SUM-PRODUCT algorithm.
+ So the SUM-PRODUCT algorithm is basically the junction tree algorithm,
+ with one extra marginalization step.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Consider the SUM-PRODUCT algorithm on an undirected tree with potential
+ functions 
+\begin_inset Formula $\psi_{s}$
+\end_inset
+
+ and 
+\begin_inset Formula $\psi_{st}$
+\end_inset
+
+.
+ Consider any initialization of the messages such that 
+\begin_inset Formula $M_{ts}(x_{s})>0$
+\end_inset
+
+ for all edges 
+\begin_inset Formula $(s,t)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Problem
+
+\series bold
+a)
+\series default
+ Prove by induction that the flooding schedule converges in at most diameter
+ of graph iterations and that the message fixed point 
+\begin_inset Formula $M^{*}$
+\end_inset
+
+ can be used to compute marginals for every node of the tree:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+p(x_{s})\propto\psi_{s}(x_{s})\prod_{t\in N(s)}M_{ts}^{*}(x_{s})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/h2_p3a.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\series bold
+Figure 4
+\series default
+: Trees with diameter 2 (left) and 3 (right).
+ Messages sent using the flooding schedule are shown in color, iteration
+ 1 (blue), 2 (red), and 3 (green).
+ The longest shortest path is illustrated by the heavy edges.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Figure 4 shows an example of two trees that converge (send all their messages)
+ in a number of iterations equal to their diameters.
+ Assume a tree 
+\begin_inset Formula $G_{d}$
+\end_inset
+
+ with 
+\begin_inset Formula $dia(G_{d})=d$
+\end_inset
+
+ converges in 
+\begin_inset Formula $d$
+\end_inset
+
+ iterations.
+ Does tree 
+\begin_inset Formula $G_{d+1}$
+\end_inset
+
+ converge in 
+\begin_inset Formula $d+1$
+\end_inset
+
+ iterations? Let 
+\begin_inset Formula $\{a_{i}b_{i}\}$
+\end_inset
+
+ be the set of longest shortest paths (diameters) of length 
+\begin_inset Formula $d+1$
+\end_inset
+
+, where by construction any node 
+\begin_inset Formula $b_{i}$
+\end_inset
+
+ is a leaf node.
+ If we prune all nodes 
+\begin_inset Formula $\{b_{i}\}$
+\end_inset
+
+, we are left with a tree of diameter 
+\begin_inset Formula $d$
+\end_inset
+
+, which by inductive assumption converges in 
+\begin_inset Formula $d$
+\end_inset
+
+ iterations.
+ The re-addition of nodes 
+\begin_inset Formula $\{b_{i}\}$
+\end_inset
+
+ adds one more set of messages which need to be propagated, and thus one
+ more iteration (see figure 4), implying that a tree of diameter 
+\begin_inset Formula $G_{d+1}$
+\end_inset
+
+ converges in 
+\begin_inset Formula $d+1$
+\end_inset
+
+ iterations.
+\end_layout
+
+\begin_layout Problem
+At this point, each node has received all the messages it needs to compute
+ it's marginal, so the relation 
+\begin_inset Formula $p(x_{s})\propto\psi_{s}(x_{s})\prod_{t\in N(s)}M_{ts}^{*}(x_{s})$
+\end_inset
+
+ holds for every node.
+ This statement is true because of the message passing protocol and flooding
+ schedule.
+ The SUM-PRODUCT algorithm converges when all possible messages at a node
+ 
+\begin_inset Formula $x_{s}$
+\end_inset
+
+ are sent and received from all neighbors.
+ Each message contains a set of nested marginalization terms from sub-trees
+ separated by the neighbors, and the marginalizations of the neighbors themselve
+s.
+ The product of these messages produces a marginalization over all other
+ nodes in the tree besides 
+\begin_inset Formula $x_{s}$
+\end_inset
+
+.
+ All that's left to do is normalization by 
+\begin_inset Formula $Z$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Problem
+
+\series bold
+b)
+\series default
+ See the README, examples.py, and sum_product.py files attached to the email
+ containing this homework.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Consider an undirected tree 
+\begin_inset Formula $T=(V,E)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Problem
+
+\series bold
+a)
+\series default
+ Provide a modification to the SUM-PRODUCT algorithm that will yield edge
+ marginals 
+\begin_inset Formula $p(x_{i},x_{j})$
+\end_inset
+
+ for 
+\begin_inset Formula $(i,j)\in E$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Problem
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/h2_p4a.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\series bold
+Figure 5
+\series default
+: Messages required for computing edge marginals: 
+\begin_inset Formula $p(x_{1},x_{2})$
+\end_inset
+
+ on left, 
+\begin_inset Formula $p(x_{3},x_{4})$
+\end_inset
+
+ and 
+\begin_inset Formula $p(x_{2},x_{3})$
+\end_inset
+
+on right.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Say we want to compute 
+\begin_inset Formula $p(x_{1},x_{2})$
+\end_inset
+
+ for the tree on the left in figure 5.
+ Marginalizing the joint probability gives:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+p(x_{1},x_{2})=\frac{1}{Z}\sum_{x_{3},x_{4}}\psi_{1}\psi_{2}\psi_{3}\psi_{4}\psi_{12}\psi_{23}\psi_{24}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+=\frac{1}{Z}\psi_{1}\psi_{2}\psi_{12}\sum_{x_{3}}\psi_{3}\psi_{23}\sum_{x_{4}}\psi_{4}\psi_{24}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+=\frac{1}{Z}\psi_{1}\psi_{2}\psi_{12}m_{32}(x_{2})m_{42}(x_{2})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+So in this example, the edge marginals still require all messages going
+ into node 2.
+ Now examine the chain on the right of figure 5.
+ Computing 
+\begin_inset Formula $p(x_{3},x_{4})$
+\end_inset
+
+ gives:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+p(x_{3},x_{4})=\frac{1}{Z}\sum_{x_{1},x_{2}}\psi_{1}\psi_{2}\psi_{3}\psi_{4}\psi_{12}\psi_{23}\psi_{34}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+=\frac{1}{Z}\psi_{3}\psi_{4}\psi_{34}\sum_{x_{1},x_{2}}\psi_{1}\psi_{2}\psi_{12}\psi_{23}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+=\frac{1}{Z}\psi_{3}\psi_{4}\psi_{34}\sum_{x_{2}}\psi_{2}\psi_{23}\sum_{x_{1}}\psi_{1}\psi_{12}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+=\frac{1}{Z}\psi_{3}\psi_{4}\psi_{34}m_{23}(x_{3})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+And computing 
+\begin_inset Formula $p(x_{2},x_{3})$
+\end_inset
+
+ gives:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+p(x_{2},x_{3})=\frac{1}{Z}\sum_{x_{1},x_{4}}\psi_{1}\psi_{2}\psi_{3}\psi_{4}\psi_{12}\psi_{23}\psi_{34}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+=\frac{1}{Z}\psi_{2}\psi_{3}\psi_{23}\sum_{x_{1}}\psi_{1}\psi_{12}\sum_{x_{4}}\psi_{4}\psi_{34}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+=\frac{1}{Z}\psi_{2}\psi_{3}\psi_{23}m_{12}(x_{2})m_{43}(x_{3})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+This gives some intuition as to what's going on.
+ In order to compute edge marginals, we need all messages that go into those
+ edges.
+ A modification to the SUM-PRODUCT algorithm that computes edge marginals
+ would involve running the usual algorithm, and compute marginals for edge
+ 
+\begin_inset Formula $(i,j)\in E$
+\end_inset
+
+ as:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+p(x_{i},x_{j})=\frac{1}{Z}\psi_{i}\psi_{j}\psi_{ij}\prod_{a\in N(i)\diagdown j}m_{ai}(x_{i})\prod_{b\in N(j)\diagdown i}m_{bj}(x_{j})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+
+\series bold
+b)
+\series default
+ Consider computing arbitrary pairwise marginals in a tree.
+ How can such a marginal be computed for a single pair? What can be said
+ about the running time for this algorithm?
+\end_layout
+
+\begin_layout Problem
+Given the chain on the right hand side of figure 5, say we want to compute
+ 
+\begin_inset Formula $p(x_{1},x_{4})$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+p(x_{1},x_{4})=\frac{1}{Z}\sum_{x_{2},x_{3}}\psi_{1}\psi_{2}\psi_{3}\psi_{4}\psi_{12}\psi_{23}\psi_{34}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+=\frac{1}{Z}\psi_{1}\psi_{4}\sum_{x_{2},x_{3}}\psi_{2}\psi_{12}\psi_{23}\psi_{3}\psi_{34}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+=\frac{1}{Z}\psi_{1}\psi_{4}\sum_{x_{2}}\psi_{2}\psi_{12}\sum_{x_{3}}\psi_{23}\psi_{3}\psi_{34}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+We get non-message terms such as 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\sum_{x_{3}}\psi_{23}\psi_{3}\psi_{34}$
+\end_inset
+
+.
+ Without having much evidence, I'll make a claim that very little cost savings
+ in terms of running time can be made when computing non-edge marginals,
+ because of these non-message terms that are not local with respect to edges.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Consider a zero-mean Gaussian random vector 
+\begin_inset Formula $(x_{1},...,x_{N})$
+\end_inset
+
+ with a strictly positive 
+\begin_inset Formula $NxN$
+\end_inset
+
+ covariance matrix 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+.
+ For a given undirected graph 
+\begin_inset Formula $G=(V,E)$
+\end_inset
+
+ with 
+\begin_inset Formula $N$
+\end_inset
+
+ verticies, suppose that 
+\begin_inset Formula $(x_{1},...,x_{N})$
+\end_inset
+
+ obeys all the basic conditional independence properties of 
+\begin_inset Formula $G$
+\end_inset
+
+, i.e.
+ one for each vertex cut set.
+\end_layout
+
+\begin_layout Problem
+
+\series bold
+a) 
+\series default
+Given the inverse covariance matrix 
+\begin_inset Formula $\Theta=\Sigma{}^{-1}$
+\end_inset
+
+, show that 
+\begin_inset Formula $\Theta_{ij}=0$
+\end_inset
+
+ for all 
+\begin_inset Formula $(i,j)\notin E$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Problem
+Let 
+\begin_inset Formula $x=(x_{1},...,x_{N})$
+\end_inset
+
+.
+ The pdf for the multi-variate Gaussian is given as:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+p(x|\mathbf{\mu},\Sigma)=\frac{1}{Z}exp\{(x-\mathbf{\mu})\Theta(x-\mu)\}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+=\frac{1}{Z}\prod_{(i,j)}exp\{(x_{i}-\mu_{i})(x_{j}-\mu_{j})\Theta_{ij}\}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+where the product is taken over all 
+\begin_inset Formula $(i,j)$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+ be two index sets that respect a conditional independence relation given
+ an index set C:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+A\perp B\,|\, C\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+In order for the distribution to respect this relation, this density function
+ has to factorize such that:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+p(x_{A},x_{B}|x_{C},\mathbf{\mu},\Sigma)\varpropto f(x_{A},x_{C})g(x_{B},x_{C})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+We can rewrite the density function like this:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \begin{eqnarray*}
+p(x|\mathbf{\mu},\Sigma) & = & \frac{1}{Z}\prod_{(i\in A,j\in C)}exp\{(x_{i}-\mu_{i})(x_{j}-\mu_{j})\Theta_{ij}\}\prod_{(i\in B,j\in C)}exp\{(x_{i}-\mu_{i})(x_{j}-\mu_{j})\Theta_{ij}\}\\
+ &  & \prod_{(i\in A,j\in B)}exp\{(x_{i}-\mu_{i})(x_{j}-\mu_{j})\Theta_{ij}\}\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+The only way for this to factorize in the way we want is if 
+\begin_inset Formula $\Theta_{ij}=0$
+\end_inset
+
+ for 
+\begin_inset Formula $i\in A$
+\end_inset
+
+, 
+\begin_inset Formula $j\in B$
+\end_inset
+
+, which gives the following form:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula \[
+p(x|\mathbf{\mu},\Sigma)=\frac{1}{Z}\prod_{(i\in A,j\in C)}exp\{(x_{i}-\mu_{i})(x_{j}-\mu_{j})\Theta_{ij}\}\prod_{(i\in B,j\in C)}exp\{(x_{i}-\mu_{i})(x_{j}-\mu_{j})\Theta_{ij}\}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+For an undirected graph to have a joint distribution like this, it can't
+ have edges between elements in 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+.
+ By the Hammersely-Clifford theorem, if we have a joint distribution that
+ factorizes as above, it satisfies the same conditional independence relations
+ as the graph 
+\begin_inset Formula $G$
+\end_inset
+
+, the family of distributions they characterize are the same.
+\end_layout
+
+\begin_layout Problem
+
+\series bold
+b) 
+\series default
+Interpret this sparsity relation in terms of cut sets and conditional independen
+ce.
+\end_layout
+
+\begin_layout Problem
+The nodes 
+\begin_inset Formula $x_{C}$
+\end_inset
+
+ are a cut set that separates 
+\begin_inset Formula $x_{A}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{B}$
+\end_inset
+
+ and provide the conditional independence between the two sets.
+ The covariance between nodes in 
+\begin_inset Formula $x_{A}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{B}$
+\end_inset
+
+ can be nonzero when 
+\begin_inset Formula $x_{C}$
+\end_inset
+
+ is unknown, but the covariance between elements of the two sets, when condition
+ed on 
+\begin_inset Formula $x_{C}$
+\end_inset
+
+, should be zero.
+\end_layout
+
+\end_body
+\end_document

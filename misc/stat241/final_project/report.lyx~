@@ -1,0 +1,1832 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass amsart
+\begin_preamble
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans default
+\font_typewriter default
+\font_default_family rmdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Dimensional Reduction with Reservoir Networks
+\end_layout
+
+\begin_layout Author
+Mike Schachter
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+Feedforward neural networks have the theoretical ability to be universal
+ approximators, meaning they can be constructed to approximate any function
+ comprised of input data and output data 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Hornik1989"
+
+\end_inset
+
+.
+ Given some data, we 
+\begin_inset Quotes eld
+\end_inset
+
+train
+\begin_inset Quotes erd
+\end_inset
+
+ a feedforward network by algorithmically tuning the weights that dictate
+ the strength of connections between neurons until the network produces
+ a good fit to the data.
+ With the recent progress in unsupervised pre-training of individual layers
+ of many-layered feedforward networks
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Bengio2009"
+
+\end_inset
+
+ (
+\begin_inset Quotes eld
+\end_inset
+
+deep nets
+\begin_inset Quotes erd
+\end_inset
+
+), it has become even more tangible to train complex networks that capture
+ important variations in high-dimensional data.
+\end_layout
+
+\begin_layout Standard
+However, there are computational concerns when the input data varies in
+ time.
+ For example, say we want to train a feedforward network to classify whether
+ a spoken word was 
+\begin_inset Quotes eld
+\end_inset
+
+cat
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+dog
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Typically we would start by transforming the sound pressure waveform into
+ a different representation called a spectrogram, which represents the frequenci
+es in the sound that change over time.
+ The spectrogram could be at least a 60 dimensional time series, i.e.
+ some waveform 
+\begin_inset Formula $u(t)\in\mathbb{R}^{60}$
+\end_inset
+
+.
+ If we sample the frequencies every millisecond, and a spoken word takes
+ at least one second, we would produce input samples that have a dimension
+ of 1000*60=60,000.
+ Although training on input with this dimensionality is achievable, we would
+ like to investigate networks which have an intrinsic capability to compress
+ a temporal sequence and store it.
+ These compressed 
+\begin_inset Quotes eld
+\end_inset
+
+memories
+\begin_inset Quotes erd
+\end_inset
+
+ would ideally be used for complex temporal computations while removing
+ the requirement to store so much data.
+\end_layout
+
+\begin_layout Standard
+Recurrent neural networks are neural networks that have loops in their connectiv
+ity.
+ They are directed cyclic graphical models.
+ As a result, they can pass around information from previous time points.
+ Their activation patterns at each time point represent not just the instantaneo
+us stimulus 
+\begin_inset Formula $u(t)$
+\end_inset
+
+, but information from previous states of the stimulus 
+\begin_inset Formula $u(t-1),...,u(t-N)$
+\end_inset
+
+.
+ For reasons that we will not get into, there are some problems with training
+ the weights of recurrent networks; they can be a bit finicky.
+\end_layout
+
+\begin_layout Standard
+One way recurrent nets are constructed and used falls under the recent moniker
+ of 
+\begin_inset Quotes eld
+\end_inset
+
+Reservoir Computing
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Reservoir computing requires the construction of a reservoir, a recurrent
+ dynamical system such as a recurrent neural network that has the capacity
+ to process and store temporal patterns.
+ To construct these networks for a classification task, first we generate
+ a random, sparsely connected recurrent network whose weights are within
+ a certain range.
+ Then we run the input through the network, and record the state of the
+ network after an input has been presented.
+ Finally, we train a simple readout classifier that predicts the stimulus
+ class from that network state 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Jaeger2001,Maass2002"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In this study, we construct a class of small, fully-connected recurrent
+ networks with random weights that perform dimensionality reduction on temporal
+ input patterns, i.e.
+ they store a compressed 
+\begin_inset Quotes eld
+\end_inset
+
+memory
+\begin_inset Quotes erd
+\end_inset
+
+ of the input that can be read out and used to classify the temporal pattern.
+ We quantify the quality of the dimensionality reduction by examining the
+ performance of readout classifiers, and attempt to figure out what structural
+ features of the weight matrix dictate the performance of a readout classifier.
+\end_layout
+
+\begin_layout Section
+Methods
+\end_layout
+
+\begin_layout Standard
+All source code for this project is at http://github.com/mschachter/prorn.
+\end_layout
+
+\begin_layout Subsection
+How the Networks are Constructed
+\end_layout
+
+\begin_layout Standard
+We use an 
+\begin_inset Formula $3$
+\end_inset
+
+-node recurrent network with linear units as shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:network"
+
+\end_inset
+
+.
+ The state of the network at time 
+\begin_inset Formula $t\in\mathbb{Z}$
+\end_inset
+
+ is a vector 
+\begin_inset Formula $x(t)\in\mathbb{R}^{3}$
+\end_inset
+
+.
+ The stimulus is a time series 
+\begin_inset Formula $u(t)\in\mathbb{R}^{M}$
+\end_inset
+
+, where in this study 
+\begin_inset Formula $M=1$
+\end_inset
+
+.
+ More on the stimulus below.
+ The weights between nodes are stored in an 
+\begin_inset Formula $NxN$
+\end_inset
+
+ matrix 
+\begin_inset Formula $W=(w_{ij})$
+\end_inset
+
+, where 
+\begin_inset Formula $w_{ij}$
+\end_inset
+
+ is the weight of the directed edge from 
+\begin_inset Formula $i$
+\end_inset
+
+ to 
+\begin_inset Formula $j$
+\end_inset
+
+.
+ The weights between elements of the stimulus and the network are stored
+ in an 
+\begin_inset Formula $MxN$
+\end_inset
+
+ matrix 
+\begin_inset Formula $W^{in}=(w_{ij}^{in})$
+\end_inset
+
+, where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $w_{ij}^{in}$
+\end_inset
+
+ is the weight of the directed edge from input 
+\begin_inset Formula $u_{i}(t)$
+\end_inset
+
+ to node 
+\begin_inset Formula $j$
+\end_inset
+
+.
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+The update equation of the network is:
+\begin_inset Formula 
+\begin{equation}
+x(t+1)=Wx(t)+W_{in}^{T}u(t)\label{eq:update_eqn}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The weight matricies are initialized to be independent Gaussian random numbers
+ from 
+\begin_inset Formula $\mathcal{N}(0,1)$
+\end_inset
+
+.
+ They are then divided by 
+\begin_inset Formula $\alpha w_{max}$
+\end_inset
+
+, where 
+\begin_inset Formula $w_{max}$
+\end_inset
+
+ is the maximum weight and 
+\begin_inset Formula $\alpha\in(0,1]$
+\end_inset
+
+ dictates how close the absolute values of a weight gets to 
+\begin_inset Formula $1$
+\end_inset
+
+.
+ When 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is set close to 
+\begin_inset Formula $1$
+\end_inset
+
+, the network operates close to the 
+\begin_inset Quotes eld
+\end_inset
+
+edge of chaos
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Legenstein2007"
+
+\end_inset
+
+.
+ This is related to how the eigenvalues of the weight matrix 
+\begin_inset Formula $W$
+\end_inset
+
+ in difference equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:update_eqn"
+
+\end_inset
+
+ dictate whether the network will settle down into a stable attractor state
+ in the absense of stimuli.
+ Let 
+\begin_inset Formula $\lambda_{i}\in\mathbb{C}$
+\end_inset
+
+ be an eigenvalue of 
+\begin_inset Formula $W$
+\end_inset
+
+, when all 
+\begin_inset Formula $|\lambda_{i}|<1$
+\end_inset
+
+, the system is said to be 
+\begin_inset Quotes eld
+\end_inset
+
+stable
+\begin_inset Quotes erd
+\end_inset
+
+ and will settle down in the absence of input.
+ If any 
+\begin_inset Formula $|\lambda_{i}|=1$
+\end_inset
+
+, the system is 
+\begin_inset Quotes eld
+\end_inset
+
+neutrally stable
+\begin_inset Quotes erd
+\end_inset
+
+, and when at least one 
+\begin_inset Formula $|\lambda_{i}|>1$
+\end_inset
+
+, the system is 
+\begin_inset Quotes eld
+\end_inset
+
+unstable
+\begin_inset Quotes erd
+\end_inset
+
+ and will diverge into a chaotic state 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Strang2006"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tikzpicture}
+\end_layout
+
+\begin_layout Plain Layout
+
+[
+\end_layout
+
+\begin_layout Plain Layout
+
+input/.style={rectangle,draw,fill=blue!20},
+\end_layout
+
+\begin_layout Plain Layout
+
+internal/.style={circle,draw}
+\end_layout
+
+\begin_layout Plain Layout
+
+]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node at (1, 1.5) [input] (u)	  {$u(t)$};
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node at (4, 1.5) [internal] (x1)  {$x_1$};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node at (5, 0) [internal] (x2)    {$x_2$};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node at (3, 0) [internal] (x3)    {$x_3$};
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (u)  to [out=0,in=180] (x1);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (x1) to [out=335,in=100] (x2);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (x1) to [out=205,in=90] (x3);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (x1) to [loop above] (x1);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (x2) to [out=205,in=345] (x3);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (x2) to [out=130,in=290] (x1);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (x2) to [loop below] (x2);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (x3) to [out=50,in=240] (x1);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (x3) to [out=15,in=165] (x2);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (x3) to [loop below] (x3);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:network"
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+The recurrent network used in this study.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We constructed approximately 4500 random networks, where each connection
+ weight was randomly generated from 
+\begin_inset Formula $\mathcal{N}(0,1)$
+\end_inset
+
+, and then rescaled as noted above with 
+\begin_inset Formula $\alpha=0.99$
+\end_inset
+
+.
+ The weight matrix 
+\begin_inset Formula $W$
+\end_inset
+
+ was 
+\begin_inset Formula $3x3$
+\end_inset
+
+, figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:eigenvalue_distribution"
+
+\end_inset
+
+ shows histograms of 
+\begin_inset Formula $|\lambda_{1}|,|\lambda_{2}|,|\lambda_{3}|$
+\end_inset
+
+ across all networks constructed.
+ The eigenvalues are ordered by size, i.e.
+ 
+\begin_inset Formula $\lambda_{1}=\lambda_{max}$
+\end_inset
+
+ for all networks.
+ Note that 
+\begin_inset Formula $|\lambda_{1}|>1$
+\end_inset
+
+ for some networks.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/weight_abs_eigenvalues.png
+	lyxscale 50
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:eigenvalue_distribution"
+
+\end_inset
+
+The weight matrix eigenvalue distributions across all constructed networks.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Stimulus Construction
+\end_layout
+
+\begin_layout Standard
+The stimuli used in this study are shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:stimuli"
+
+\end_inset
+
+.
+ They are finite with length 
+\begin_inset Formula $T_{u}=15$
+\end_inset
+
+, and constructed as follows:
+\end_layout
+
+\begin_layout Enumerate
+Randomly choose the number of stimulus 
+\begin_inset Quotes eld
+\end_inset
+
+bumps
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $N_{b}$
+\end_inset
+
+, from a uniform distribution of integers in 
+\begin_inset Formula $(1,\gamma T_{u})$
+\end_inset
+
+, where 
+\begin_inset Formula $\gamma\in(0,1)$
+\end_inset
+
+ sets the maximum number of bumps.
+\end_layout
+
+\begin_layout Enumerate
+Generate each bump 
+\begin_inset Formula $b_{i}=(t_{i},h_{i},\sigma_{i})$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Choose a bump time, a uniform random integer 
+\begin_inset Formula $t_{i}\in(0,T_{u})$
+\end_inset
+
+ that has not been chosen yet.
+\end_layout
+
+\begin_layout Enumerate
+Choose a bump height, a uniform random integer 
+\begin_inset Formula $h_{i}\in(1,h_{max})$
+\end_inset
+
+, where 
+\begin_inset Formula $h_{max}\in\mathbb{N}$
+\end_inset
+
+ determines the number of discrete 
+\begin_inset Quotes eld
+\end_inset
+
+amplitudes
+\begin_inset Quotes erd
+\end_inset
+
+ that are possible in the stimulus.
+\end_layout
+
+\begin_layout Enumerate
+Choose a random standard deviation 
+\begin_inset Formula $\sigma_{i}\sim\mathcal{N}(0,\sigma_{avg})$
+\end_inset
+
+, the bump spread.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Generate the stimulus prototype as:
+\begin_inset Formula 
+\[
+u(t;b)=\sum_{i=1}^{N_{b}}h_{i}exp\left\{ \frac{(t-t_{i})^{2}}{2\pi\sigma_{i}^{2}}\right\} 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Generate a family of stimuli from the prototype by adding Gaussian noise.
+\end_layout
+
+\begin_layout Standard
+The stimulus was always attached to node 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+.
+ We used 5 different stimulus prototypes, and from these 5 prototypes we
+ generated 500 noisy sample stimuli for each class, according to the above
+ algorithm.
+ Again, figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:stimuli"
+
+\end_inset
+
+ illustrates these stimuli.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/stimuli.png
+	lyxscale 50
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:stimuli"
+
+\end_inset
+
+Stimulus patterns used as input to network.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Readout Classifier Construction
+\end_layout
+
+\begin_layout Standard
+Each stimulus prototype described above is used to generate a family of
+ temporal patterns in one of five classes.
+ We want to present the stimulus to the recurrent network, measure the instantan
+eous state following stimulus presentation, and then train our readout classifie
+r to predict the class of that stimulus based on the state.
+\end_layout
+
+\begin_layout Standard
+Given a network, we generate the samples for a classifier as follows.
+ First, we let the network equilibrate to a rest state in the absence of
+ input, over 
+\begin_inset Formula $500$
+\end_inset
+
+ time steps.
+ As noted above and shown through simulation, any network with 
+\begin_inset Formula $|\lambda_{max}|<1$
+\end_inset
+
+ will exhibit this behavior.
+ We label the equilibration time period as 
+\begin_inset Formula $-500\le t<0$
+\end_inset
+
+.
+ At 
+\begin_inset Formula $t=0$
+\end_inset
+
+, we switch on a stimulus of class 
+\begin_inset Formula $\mathcal{C}_{i}$
+\end_inset
+
+, which runs until time 
+\begin_inset Formula $t=T_{u}-1$
+\end_inset
+
+.
+ We then record the network state 
+\begin_inset Formula $x(\tau)$
+\end_inset
+
+, where 
+\begin_inset Formula $\tau=T_{u}$
+\end_inset
+
+, and create a sample 
+\begin_inset Formula $(x(\tau),\mathcal{C}_{i})$
+\end_inset
+
+ comprised of the state and stimulus class.
+ With 
+\begin_inset Formula $500$
+\end_inset
+
+ noisy stimuli per class, and 
+\begin_inset Formula $5$
+\end_inset
+
+ classes, we obtained 
+\begin_inset Formula $2500$
+\end_inset
+
+ training samples per network in a dataset 
+\begin_inset Formula $\mathcal{D}=\{(x(\tau),\mathcal{C}_{i})\}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $75\%$
+\end_inset
+
+ of the data was used for training and 
+\begin_inset Formula $25\%$
+\end_inset
+
+ was held out for validation.
+\end_layout
+
+\begin_layout Standard
+We tried two different readout classifiers.
+ The first utilized logistic regression in a one-vs-all configuration.
+ Given one class 
+\begin_inset Formula $\mathcal{C}_{i}$
+\end_inset
+
+, we labeled samples belonging to 
+\begin_inset Formula $\mathcal{C}_{i}$
+\end_inset
+
+ as 
+\begin_inset Formula $1$
+\end_inset
+
+, and the rest of the samples to 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ We then trained a logistic regression to predict membership in 
+\begin_inset Formula $\mathcal{C}_{i}$
+\end_inset
+
+ or not.
+ The performance was quantified per-class with percent correct.
+ Our overall performance measure for the logistic regression readout is
+ the average percent correct across classes.
+\end_layout
+
+\begin_layout Standard
+The second classifier was a two-layer feedforward neural net, with 
+\begin_inset Formula $2$
+\end_inset
+
+ hidden nodes and 
+\begin_inset Formula $5$
+\end_inset
+
+ output nodes.
+ The middle nodes utilized a tanh activation function, and the output nodes
+ utilized a softmax activaction function.
+ By doing so, the network learned to predict the posterior probabilities
+ 
+\begin_inset Formula $p(\mathcal{C}_{i}|x)$
+\end_inset
+
+.
+ However, we forwent an extensive exploration of neural network performance
+ measures and relied on the crude percent correct on the test set as the
+ overall performance measure for the network readout.
+ The two classifiers had somewhat proportional performances, as seen in
+ figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:nn_logit"
+
+\end_inset
+
+.
+ The neural network performance was much more variable than for logistic
+ regression.
+ Lack of computational power prevented us from using multiple initial guesses
+ and averaging performances to get an overall performance number.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/nn_vs_logit_perfs.png
+	lyxscale 50
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:nn_logit"
+
+\end_inset
+
+Relationship between performance of logistic regression and feedforward
+ neural network readouts used to classify a stimulus class based on network
+ state, after observing the stimulus.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are several reasons to try out at least two different classifiers.
+ First, logistic regression can only handle linearly-separable classes,
+ whereas a feedforward neural network is (in an ideal situation) a universal
+ approximator that can deal with nonlinearly-separable classes 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Hornik1989"
+
+\end_inset
+
+.
+ Second, the one-vs-all (also known as 
+\begin_inset Quotes eld
+\end_inset
+
+one-vs-rest
+\begin_inset Quotes erd
+\end_inset
+
+) configuration of our logisitc regression implementation leads to regions
+ of input space that are ambiguously classified 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Bishop2006"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+One particular advantage of logistic regression over neural nets is that
+ they are very quick to train.
+ There is a reasonably proportional relationship between performances in
+ the two types of readout implementations (figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:nn_logit"
+
+\end_inset
+
+), and if we were to 
+\begin_inset Quotes eld
+\end_inset
+
+breed
+\begin_inset Quotes erd
+\end_inset
+
+ recurrent networks using readout peformance as a fitness function, we could
+ take solace in the fact that logistic readouts could be used to evaluate
+ that fitness function quickly.
+\end_layout
+
+\begin_layout Standard
+Regardless, the goal of this study is not to build a better readout, but
+ to try and understand why the network provides a reasonable temporal kernel
+ for the readouts, whatever implementation we use.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:methods_info"
+
+\end_inset
+
+A Information Theoretic Predictor for Readout Performance
+\end_layout
+
+\begin_layout Standard
+We would like to measure network performance in a model independent way,
+ in the context of predicting how well a readout could possibly do.
+ As mentioned later in the results, an ideal network exhibits states that
+ are close together for stimuli of the same class, but farther away from
+ states in other stimulus classes.
+ We used mutual information in an attempt to quantify this effect.
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $R=5$
+\end_inset
+
+ be the number of stimulus prototypes used and 
+\begin_inset Formula $\mathcal{C}_{i}$
+\end_inset
+
+ be a stimulus class.
+ For a given network, the dataset 
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+ is comprised of all recorded pairs 
+\begin_inset Formula $(x(\tau),\mathcal{C}_{i})$
+\end_inset
+
+, where 
+\begin_inset Formula $i\in\{1,2,3,4,5\}$
+\end_inset
+
+.
+ We want to look at two distributions; the distribution of network states
+ at time 
+\begin_inset Formula $\tau$
+\end_inset
+
+ given a particular 
+\begin_inset Formula $\mathcal{C}_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $\mathbb{P}[x(\tau)|\mathcal{C}_{i}]$
+\end_inset
+
+, and the class-independent distribution of network states 
+\begin_inset Formula $\mathbb{P}[x(\tau)]$
+\end_inset
+
+.
+ We want to compute the entropy for both of these distributions.
+ Since 
+\begin_inset Formula $x\in\mathbb{R}^{3}$
+\end_inset
+
+, we bin the data in a 3-dimensional histogram, and compute the empirical
+ entropies:
+\begin_inset Formula 
+\[
+H[x(\tau)]=\sum_{x(\tau)\in\mathcal{D}}p(x(\tau))\, log_{2}p(x(\tau))
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{eqnarray*}
+H[x(\tau)|\{\mathcal{C}_{i}\}] & = & \sum_{\{\mathcal{C}_{i}\}}p(\mathcal{C}_{i})\sum_{x(\tau)\in\mathcal{D}}p(x(\tau)|\mathcal{C}_{i})\, log_{2}p(x(\tau)|\mathcal{C}_{i})\\
+ & = & \frac{1}{R}\sum_{\{\mathcal{C}_{i}\}}\,\sum_{x(\tau)\in\mathcal{D}}p(x(\tau)|\mathcal{C}_{i})\, log_{2}p(x(\tau)|\mathcal{C}_{i})
+\end{eqnarray*}
+
+\end_inset
+
+The mutual information is then given as:
+\begin_inset Formula 
+\[
+\mathcal{I}=H[x(\tau)]-H[x(\tau)|\{\mathcal{C}_{i}\}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We'll explain more about why this measure may be useful soon.
+\end_layout
+
+\begin_layout Section
+Results
+\end_layout
+
+\begin_layout Subsection
+The Recurrent Network Performs Dimensionality Reduction
+\end_layout
+
+\begin_layout Standard
+The dimensionality of our stimlus is 
+\begin_inset Formula $T_{u}=15$
+\end_inset
+
+.
+ It's reasonable to assume the stimuli live on a lower dimensional subspace,
+ given the manner in which they're generated.
+ Our recurrent network is a 3-dimensional entity.
+ We have trained readout classifiers to predict the class of a 15-dimensional
+ stimulus based on a single readout from a 3-dimensional network state.
+ Intuitively, we can think of the recurrent network as performing a dimensionali
+ty reduction on the temporal stimulus.
+ See figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rnet_dimred"
+
+\end_inset
+
+ for some visual intuition.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/rnet_state_dimred.png
+	lyxscale 50
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:rnet_dimred"
+
+\end_inset
+
+Each point is a network state recorded directly after the presentation of
+ a stimulus, colored by the class of the stimulus.
+ States from the same class lie in a cluster.
+ In essense, the recurrent network is performing a dimensionality reduction
+ on the temporal stimulus, projecting it into a 3-dimensional network state.
+ Note that this particular network does not do a good job of separating
+ the blank and cyan stimulus classes - others do better.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A commonly used tool for dimensionality reduction is principle components
+ analysis.
+ PCA works by constructing a covariance matrix of the stimuli, taking it's
+ eigenvectors, and using a subset of the eigenvectors that correspond to
+ the largest eigenvalues to project the data into a lower dimensional subspace.
+ For comparison with what the recurrent network is doing, we performed PCA
+ on our stimulus set and projected the data into a 3-dimensional subspace.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:stim_pca"
+
+\end_inset
+
+ shows the results.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/stim_pca_dimred.png
+	lyxscale 50
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:stim_pca"
+
+\end_inset
+
+The stimuli in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:stimuli"
+
+\end_inset
+
+ projected onto a 3-dimensional subspace using PCA.
+ Note the color scheme is the same as in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rnet_dimred"
+
+\end_inset
+
+; PCA projects blue and black classes closer together in 3D space, while
+ the network in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rnet_dimred"
+
+\end_inset
+
+ projects black and cyan as close together.
+ Although it's hard to see by comparing to figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rnet_dimred"
+
+\end_inset
+
+, many recurrent nets projected the stimuli to a 2-dimensional manifold
+ in a 3d state space, wheras PCA uses all 3 dimensions.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As mentioned in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:methods_info"
+
+\end_inset
+
+, we attempted to quantify the separation of clusters using mutual information.
+ For reference, the mutual information of network states in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rnet_dimred"
+
+\end_inset
+
+ was 1.4 bits, while the PCA projection in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:stim_pca"
+
+\end_inset
+
+ was 2.3 bits.
+ We hoped that, for network states that are well separated by stimulus class,
+ the overall entropy 
+\begin_inset Formula $H[x(\tau)]$
+\end_inset
+
+ would be high compared to the average entropy of each cluster 
+\begin_inset Formula $H[x(\tau)|\{\mathcal{C}_{i}\}]$
+\end_inset
+
+, and the mutual information 
+\begin_inset Formula $\mathcal{I}=H[x(\tau)]-H[x(\tau)|\{\mathcal{C}_{i}\}]$
+\end_inset
+
+ would be high.
+\end_layout
+
+\begin_layout Standard
+Unfortunately, using a histogram to compute the empirical entropy of a 3-dimensi
+onal continuous variable is frought with issues.
+ As noted in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Beirlant1997"
+
+\end_inset
+
+, histogram estimators for continuous entropy measurements can exhibit serious
+ bias with non-univariate distributions.
+ Due to some numerical issues that are still being worked through, we successful
+ly estimated 
+\begin_inset Formula $H[x(\tau)|\{\mathcal{C}_{i}\}]$
+\end_inset
+
+ for only half of the networks.
+ The mutual information had a dependence on the histogram bin size used
+ to estimate it, although not shown here we continued to increase the bin
+ size until the entropies plateaued.
+\end_layout
+
+\begin_layout Standard
+Technical problems aside, figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:mutual_information"
+
+\end_inset
+
+ shows that there is a relationship between readout performance and the
+ mutual information 
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+ between the network state and the stimulus class.
+ Although not sufficient, having a relatively high mutual information does
+ seem to be a necessary condition for good readout performance.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/mutual_information_vs_performance.png
+	lyxscale 50
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:mutual_information"
+
+\end_inset
+
+Readout performance as a function of mutual information between network
+ state 
+\begin_inset Formula $x(\tau)$
+\end_inset
+
+ and stimulus class 
+\begin_inset Formula $\mathcal{C}_{i}$
+\end_inset
+
+.
+ Lower performance means higher percent correct and a better readout.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Recurrent Nets that Separate Stimulus Classes Well Exhibit Better Readout
+ Performance
+\end_layout
+
+\begin_layout Standard
+One result that seems to have emerged from this study is that a recurrent
+ network whose state separates stimuli well has better readout performance.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:net_state_best"
+
+\end_inset
+
+ shows the network state at readout time 
+\begin_inset Formula $\tau$
+\end_inset
+
+ for the best performing network.
+ It clearly separates different temporal stimuli, thus performing a good
+ job of dimensionally reducing a higher dimensional stimulus set.
+ In comparison, a two-layer neural net readout trained on the PCA data outperfor
+ms one trained on the state of this recurrent network by about 3-5% (not
+ shown).
+ However, PCA requires knowledge of the entire dataset to do it's dimensional
+ reduction; while all the recurrent network has to do is exist! PCA also
+ requires a projection of the high dimensional stimulus, which requires
+ the stimulus to be stored in memory.
+ There is no such constraint for the recurrent network.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/rnet_state_best.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:net_state_best"
+
+\end_inset
+
+The recurrent network whose readouts performed the best exhibits well-separated
+ clusters in it's state.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Relationship Between Eigenvalues, Mutual Information, and Performance
+\end_layout
+
+\begin_layout Standard
+There are relationships between how close recurrent networks come to the
+ 
+\begin_inset Quotes eld
+\end_inset
+
+edge-of-chaos
+\begin_inset Quotes erd
+\end_inset
+
+ and their ability to store memory traces in their states following stimulus
+ presentation 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Legenstein2007,Jaeger2001"
+
+\end_inset
+
+.
+ Networks with a weight matrix whose absolute eigenvalues are close to 
+\begin_inset Formula $1$
+\end_inset
+
+ have a tendency to exhibit good properties for readouts.
+ We have provided some intuition as to what these properties are; specifically
+ showing that networks with good readout performance have a tendency to
+ well-separate stimulus classes in their readout states.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/mi_eigen_perf.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:4d_performance"
+
+\end_inset
+
+Redder is better - each point is a network; top two weight matrix eigenvalues
+ 
+\begin_inset Formula $|\lambda_{1}|$
+\end_inset
+
+ and 
+\begin_inset Formula $|\lambda_{2}|$
+\end_inset
+
+ , comprise the xy axis, and mutual information is the z axis.
+ Readout performance is represented by the color of each point.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now we will jump the shark.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4d_performance"
+
+\end_inset
+
+ is a 4-dimensional scatterplot, where each point is a recurrent network.
+ The top two eigenvalues 
+\begin_inset Formula $|\lambda_{1}|$
+\end_inset
+
+ and 
+\begin_inset Formula $|\lambda_{2}|$
+\end_inset
+
+ are on the xy-axis, and mutual information is plotted on the z-axis.
+ The network performance is colored, red is good, blue is bad.
+ The figure clearly shows that the best networks for readouts are ones whose
+ top eigenvalues are close to 
+\begin_inset Formula $1$
+\end_inset
+
+, and also have high mutual information.
+ Future work will untangle the relationships between these properties and
+ structural constraints on the network's weight matrix 
+\begin_inset Formula $W$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Discussion
+\end_layout
+
+\begin_layout Standard
+This writeup documents a pilot study into the properties of a class of recurrent
+ neural networks whose weights are not trained.
+ The weights are randomly generated and static, and a simple linear readout
+ is built to classify a temporal pattern after it is presented.
+ There are many avenues for improvment..
+\end_layout
+
+\begin_layout Standard
+Future directions include further study of recurrent networks that do dimensiona
+l reduction, but also networks whose state dimensionality is larger than
+ the support for the temporal stimulus.
+ Such networks are closer to what a support vector machine is - projecting
+ to a higher dimensional, potentially nonlinear space in order to better
+ separate the input patterns.
+ Also, we are primarily interested in the study of the brain.
+ In the brain, connection weights change as a function of the patterns of
+ internal state, a phenomenon called synaptic plasticity.
+ One group has begun studying the properties of recurrent networks with
+ such plasticity 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Lazar2007"
+
+\end_inset
+
+, and we hope to move in that direction as well.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "/home/cheese63/goatsnotes/jabref/papers"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

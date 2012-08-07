@@ -1,0 +1,576 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass amsart
+\begin_preamble
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\end_preamble
+\use_default_options false
+\begin_removed_modules
+eqs-within-sections
+figs-within-sections
+\end_removed_modules
+\begin_modules
+theorems-ams
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing onehalf
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 1
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Short-Term Memory Capacities of Recurrent Neural Networks
+\end_layout
+
+\begin_layout Author
+Mike Schachter
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+Recurrent neural networks have the ability to store short-term memories.
+ Also, as nonlinear adaptive filters, they have the ability to do complex
+ temporal processing of a multi-dimensional time series.
+ Here we construct recurrent networks, stimulate them with realistic natural
+ input, and use several techniques to try and quantify how much and what
+ kind of information they retain about that natural input, and what kind
+ of nonlinear operations they can perform.
+\end_layout
+
+\begin_layout Standard
+In a simplified view, a neuron can be represented as having an internal
+ state, for example the voltage, or intracellular calcium concentration,
+ and an output state - spikes.
+ For neuron 
+\begin_inset Formula $i$
+\end_inset
+
+, we'll write the internal state as 
+\begin_inset Formula $v_{i}^{t}$
+\end_inset
+
+ and the output state as 
+\begin_inset Formula $r_{i}^{t}$
+\end_inset
+
+, indexed by time 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ The temporal evolution of the internal state can be described using a different
+ial equation:
+\begin_inset Formula 
+\[
+\frac{dv_{i}}{dt}=F(v_{i}^{t},r_{N(i)}^{t},w_{N(i)}^{t},\psi_{i})+\eta
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $N(i)$
+\end_inset
+
+ is the index set of incoming connections, 
+\begin_inset Formula $\psi_{i}$
+\end_inset
+
+ is a set of fixed parameters, and 
+\begin_inset Formula $w_{N(i)}^{t}$
+\end_inset
+
+ is the set of synaptic weights for neuron 
+\begin_inset Formula $i$
+\end_inset
+
+, at time 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ There is also a noise parameter 
+\begin_inset Formula $\eta\sim\mathcal{N}(0,\sigma^{2})$
+\end_inset
+
+ that makes things stochastic.
+ The mapping from internal state to output state is then stochastic, defined
+ by a probability distribution 
+\begin_inset Formula $\mathbb{P}(r_{i}^{t}|v_{i}^{t})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Note that this description also includes memoryless sigmoidal neurons typically
+ used in artificial neural networks, which have 
+\begin_inset Formula $r_{i}^{t}=v_{i}^{t}$
+\end_inset
+
+ and: 
+\begin_inset Formula 
+\[
+\frac{dv_{i}}{dt}=-v_{i}^{t}+g(<w_{N(i)}^{t},r_{N(i)}^{t}>)
+\]
+
+\end_inset
+
+, where 
+\begin_inset Formula $g$
+\end_inset
+
+ is a sigmoidal function such as 
+\begin_inset Formula $g(x)=\frac{1}{1+e^{-x}}$
+\end_inset
+
+ or 
+\begin_inset Formula $g(x)=tanh(x)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Methods
+\end_layout
+
+\begin_layout Subsection
+Constructing Recurrent Networks
+\end_layout
+
+\begin_layout Standard
+A recurrent network is a set of interconnected nodes with cycles.
+ Each node in the network evolves over time and can be characterized by
+ a latent variable 
+\begin_inset Formula $z_{i}$
+\end_inset
+
+ denoting it's internal state, and an observable state 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ which is a function of the latent variable.
+ Networks described here are perturbed externally by an input stimulus 
+\begin_inset Formula $s(t)\in\mathbb{R}^{d}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tikzpicture}
+\end_layout
+
+\begin_layout Plain Layout
+
+[
+\end_layout
+
+\begin_layout Plain Layout
+
+external/.style={rectangle,draw,fill=blue!20},
+\end_layout
+
+\begin_layout Plain Layout
+
+latent/.style={circle,draw},
+\end_layout
+
+\begin_layout Plain Layout
+
+observed/.style={circle,draw,fill=gray!20}
+\end_layout
+
+\begin_layout Plain Layout
+
+]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node at (2, -1) [external] (s)                {$
+\backslash
+textbf{s}(t)$};
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node at (4, 0) [latent]   (z1)                  {$z_1$};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node           [observed] (x1) [right of=z1]    {$x_1$};
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node           [latent]   (z2) [below of=z1]       {$z_2$};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node           [observed] (x2) [right of=z2]    {$x_2$};
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node           [latent]   (z3) [below of=z2]    {$z_3$};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node           [observed] (x3) [right of=z3]    {$x_3$};
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (z1) -- (x1);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (z2) -- (x2);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+draw[->] (z3) -- (x3);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this formalism, there is a probability distribution 
+\begin_inset Formula $\mathbb{P}(x_{i}(t)|z(t-1),s(t),\theta)$
+\end_inset
+
+ describing how the latent variable evolves in time as as function of the
+ previous observable network state 
+\begin_inset Formula $z(t-1)$
+\end_inset
+
+, the current input 
+\begin_inset Formula $s(t)$
+\end_inset
+
+, and some parameters 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+ There is also a distribution 
+\begin_inset Formula $\mathbb{P}(z_{i}(t)|x_{i}(t),\alpha)$
+\end_inset
+
+ describing the decision function that translates the internal state at
+ time 
+\begin_inset Formula $t$
+\end_inset
+
+ to the observable state at time 
+\begin_inset Formula $t$
+\end_inset
+
+, parameterized by 
+\begin_inset Formula $\alpha$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Sigmoidal Units
+\end_layout
+
+\begin_layout Standard
+For the sigmoidal unit, the latent variable is the same as the observed
+ variable, 
+\begin_inset Formula $z_{i}(t)=x_{i}(t)$
+\end_inset
+
+.
+ The update equation for a sigmoidal network of 
+\begin_inset Formula $N$
+\end_inset
+
+ units is:
+\begin_inset Formula $ $
+\end_inset
+
+
+\begin_inset Formula $ $
+\end_inset
+
+
+\begin_inset Formula 
+\[
+x(t+1)=f(Wx(t)+b+Hs(t))+\eta
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $x(t)\in\mathbb{R}^{N}$
+\end_inset
+
+ is the network state at time 
+\begin_inset Formula $t$
+\end_inset
+
+, 
+\begin_inset Formula $W\in\mathbb{R}^{NxN}$
+\end_inset
+
+ is a weight matrix, 
+\begin_inset Formula $b\in\mathbb{R}^{N}$
+\end_inset
+
+ are biases, 
+\begin_inset Formula $f$
+\end_inset
+
+ is a sigmoidal output nonlinearity, 
+\begin_inset Formula $H\in\mathbb{R}^{Nxd}$
+\end_inset
+
+ are input weights, and 
+\begin_inset Formula $\eta\sim\mathcal{N}(0,I)$
+\end_inset
+
+, 
+\begin_inset Formula $\eta\in\mathbb{R}^{N}$
+\end_inset
+
+ is Gaussian noise.
+ The distribution for the internal variable is:
+\begin_inset Formula 
+\[
+\mathbb{P}(x(t)|x(t-1),s(t),W,b,H)\sim\mathcal{N}(f(Wx(t-1)+b+Hs(t)),I)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Generalized Linear Poisson Processes
+\end_layout
+
+\begin_layout Standard
+In the GLPP, the latent variable is the rate of the Poisson process, which
+ is a linear-nonlinear transformation similar to the noiseless sigmoidal
+ update:
+\begin_inset Formula 
+\[
+x(t+1)=g(Wz(t)+b+Hs(t))
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One crucial distinction is that the update equation is dependent on the
+ values for observed variables in the network.
+ 
+\begin_inset Formula $g(y)$
+\end_inset
+
+ is typically a monotonic function.
+ The distribution of the observed variable given this latent variable is:
+\begin_inset Formula 
+\[
+\mathbb{P}(z_{i}(t)|x_{i}(t))\sim Poisson(g(Wz(t)+b+Hs(t))
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Units can be simulated with time-rescaling.
+ Let 
+\begin_inset Formula $t_{j}$
+\end_inset
+
+ be the time of the last event, or zero if no events have occured, and create
+ a rnadom variable 
+\begin_inset Formula $R_{t}=\int_{t_{j}}^{0}x_{i}(t-\tau)d\tau$
+\end_inset
+
+.
+ Then 
+\begin_inset Formula $R_{t}$
+\end_inset
+
+ is distributed exponentially with unit rate.
+ To simulate, generate a random exponential number with unit rate, and keep
+ track of the integral of the latent variable up to time 
+\begin_inset Formula $t$
+\end_inset
+
+, 
+\begin_inset Formula $R_{t}$
+\end_inset
+
+.
+ When 
+\begin_inset Formula $R_{t}\ge1$
+\end_inset
+
+, set 
+\begin_inset Formula $R_{t}=0$
+\end_inset
+
+ and generate an event.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Integrate-and-fire Units
+\end_layout
+
+\begin_layout Subsection
+Quantifying Short Term Memory Capability
+\end_layout
+
+\begin_layout Subsubsection
+Fisher Memory Curves
+\end_layout
+
+\begin_layout Subsubsection
+Spatio-Temporal Receptive Fields
+\end_layout
+
+\begin_layout Subsubsection
+Readout Classifiers
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,938 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass amsart
+\use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family rmdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Stat 241: Homework #4
+\end_layout
+
+\begin_layout Author
+Mike Schachter
+\end_layout
+
+\begin_layout Problem
+Consider data where 
+\begin_inset Formula $N=196$
+\end_inset
+
+ individuals are distributed multinomially into four categories, giving
+ data 
+\begin_inset Formula $y=\{120,16,22,38\}$
+\end_inset
+
+.
+ Let the model for this data be a multinomial distribution with 
+\begin_inset Formula $\{\frac{1}{2}+\frac{1}{4}\pi,\frac{1}{4}(1-\pi),\frac{1}{4}(1-\pi),\frac{1}{4}\pi\}$
+\end_inset
+
+, for 
+\begin_inset Formula $\pi\in(0,1)$
+\end_inset
+
+.
+ Let the complete data be 
+\begin_inset Formula $x=(x_{1},x_{2},x_{3},x_{4},x_{5})$
+\end_inset
+
+, where 
+\begin_inset Formula $y_{1}=x_{1}+x_{2}$
+\end_inset
+
+, 
+\begin_inset Formula $y_{2}=x_{3}$
+\end_inset
+
+, 
+\begin_inset Formula $y_{3}=x_{4}$
+\end_inset
+
+, and 
+\begin_inset Formula $y_{4}=x_{5}$
+\end_inset
+
+.
+ Use EM to solve for 
+\begin_inset Formula $\pi$
+\end_inset
+
+ and run the algorithm for 10 steps.
+\end_layout
+
+\begin_layout Problem
+I adapted an answer provided in section 1.4.2 of McLachlan 2008, 
+\begin_inset Quotes eld
+\end_inset
+
+The EM Algorithm and Extensions
+\begin_inset Quotes erd
+\end_inset
+
+.
+ First we'll assume that the complete data is distributed multinomially
+ as 
+\begin_inset Formula $\theta=\{\frac{1}{2},\frac{1}{4}\pi,\frac{1}{4}(1-\pi),\frac{1}{4}(1-\pi),\frac{1}{4}\pi\}$
+\end_inset
+
+.
+ The first step of the problem is to write out the likelihood of the complete
+ data 
+\begin_inset Formula $x$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+L_{c}(x|\pi)=\frac{N!}{\prod_{k=1}^{5}x_{k}!}\left(\frac{1}{2}\right)^{x_{1}}\left(\frac{1}{4}\pi\right)^{x_{2}}\left(\frac{1}{4}(1-\pi)\right)^{x_{3}}\left(\frac{1}{4}(1-\pi)\right)^{x_{4}}\left(\frac{1}{4}\pi\right)^{x_{5}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Then take the log:
+\begin_inset Formula 
+\begin{eqnarray*}
+l_{c}(x|\pi) & = & log\, N!-\sum_{i=1}^{5}log\, x_{i}!+x_{1}log\,\frac{1}{2}+(x_{2}+x_{5})log\,\pi+(x_{3}+x_{4})log\,(1-\pi)\\
+ & - & (x_{2}+x_{5}+x_{3}+x_{4})log\,4
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Because in the M-step we're going to differentiate with respect to 
+\begin_inset Formula $\pi$
+\end_inset
+
+, we'll define a function on everything that's not a function of 
+\begin_inset Formula $\pi$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+g(x)=log\, N!-\sum_{i=1}^{5}log\, x_{i}!+x_{1}log\,\frac{1}{2}-(x_{2}+x_{5}+x_{3}+x_{4})log\,4
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+So the complete log likelihood becomes:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula 
+\[
+l_{c}(x|\pi)=g(x)+(x_{2}+x_{5})log\,\pi+(x_{3}+x_{4})log\,(1-\pi)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+The latent variables in the complete log likelihood are 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+.
+ In the E-step, we take the expectation of the complete log likelihood with
+ respect to these latent variables, assuming a set of initialized parameters
+ 
+\begin_inset Formula $\theta^{t}$
+\end_inset
+
+ and incomplete data 
+\begin_inset Formula $y=(y_{1},y_{2},y_{3},y_{4})$
+\end_inset
+
+: 
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula 
+\[
+\mathbb{E}\,[l_{c}(x|\pi)\,|\,\theta^{t},y]=\mathbb{E}\,[g(x)\,|\,\theta^{t},y]+(\mathbb{E}\,[x_{2}\,|\,\theta^{t},y]+y_{4})log\,\pi+(y_{2}+y_{3})log\,(1-\pi)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Where relevant, 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ was replaced with 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+.
+ We're going to ignore 
+\begin_inset Formula $\mathbb{E}\,[g(x)\,|\,\theta^{t},y]$
+\end_inset
+
+, because it's not a function of 
+\begin_inset Formula $\pi$
+\end_inset
+
+, it's a function of 
+\begin_inset Formula $\pi^{t}$
+\end_inset
+
+, which is constant.
+ It will be differentiated out in the M-step.
+ But we do need to evaluate 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbb{E}\,[x_{2}\,|\,\theta^{t},y]$
+\end_inset
+
+.
+ In order to do so, note that 
+\begin_inset Formula $y_{1}=x_{1}+x_{2}$
+\end_inset
+
+.
+ The total weight of 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+ is 
+\begin_inset Formula $\frac{1}{2}+\frac{1}{4}\pi$
+\end_inset
+
+, so the probability of 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+ is 
+\begin_inset Formula $\frac{1}{2}(\frac{1}{2}+\frac{1}{4}\pi)^{-1}$
+\end_inset
+
+, and the conditional expectation is:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Formula 
+\[
+\mathbb{E}\,[x_{2}\,|\,\theta^{t},y]=y_{1}\frac{1}{2}(\frac{1}{2}+\frac{1}{4}\pi^{t})^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Let 
+\begin_inset Formula $\bar{x}_{2}^{t}=\mathbb{E}\,[x_{2}\,|\,\theta^{t},y]$
+\end_inset
+
+, the expected complete log likelihood becomes:
+\begin_inset Formula 
+\[
+\mathbb{E}\,[l_{c}(x|\pi)\,|\,\theta^{t},y]=\mathbb{E}\,[g(x)\,|\,\theta^{t},y]+(\bar{x}_{2}^{t}+y_{4})log\,\pi+(y_{2}+y_{3})log\,(1-\pi)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+For the M-step we differentiate this with respect to 
+\begin_inset Formula $\pi$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial}{\partial\pi}\left[\mathbb{E}\,[l_{c}(x|\pi)\,|\,\theta^{t},y]\right] & = & \frac{\partial}{\partial\pi}\left[(\bar{x}_{2}^{t}+y_{4})log\,\pi+(y_{2}+y_{3})log\,(1-\pi)\right]\\
+ & = & \frac{1}{\pi}(\bar{x}_{2}^{t}+y_{4})-\frac{1}{1-\pi}(y_{2}+y_{3})
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+Then we set this to zero, and solve for 
+\begin_inset Formula $\pi$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{1}{\pi}(\bar{x}_{2}^{t}+y_{4}) & = & \frac{1}{1-\pi}(y_{2}+y_{3})\\
+ & ...\\
+\pi & = & \frac{\bar{x}_{2}^{t}+y_{4}}{x_{2}+y_{4}+y_{2}+y_{3}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+So now we have our E and M steps:
+\end_layout
+
+\begin_layout Problem
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+E-step:
+\begin_inset Formula 
+\[
+\bar{x}_{2}^{t}=y_{1}\frac{1}{2}(\frac{1}{2}+\frac{1}{4}\pi^{t})^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+M-step: 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+\pi^{t+1}=\frac{\bar{x}_{2}^{t}+y_{4}}{x_{2}+y_{4}+y_{2}+y_{3}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+The first 10 iterations of the algorithm, with initial guess 
+\begin_inset Formula $\pi^{0}=0.1$
+\end_inset
+
+, are:
+\end_layout
+
+\begin_layout Enumerate
+x2=1.00, old_pi=5.714, new_pi=0.100
+\end_layout
+
+\begin_layout Enumerate
+x2=2.00, old_pi=25.324, new_pi=0.535
+\end_layout
+
+\begin_layout Enumerate
+x2=3.00, old_pi=28.570, new_pi=0.625
+\end_layout
+
+\begin_layout Enumerate
+x2=4.00, old_pi=28.974, new_pi=0.637
+\end_layout
+
+\begin_layout Enumerate
+x2=5.00, old_pi=29.022, new_pi=0.638
+\end_layout
+
+\begin_layout Enumerate
+x2=6.00, old_pi=29.028, new_pi=0.638
+\end_layout
+
+\begin_layout Enumerate
+x2=7.00, old_pi=29.029, new_pi=0.638
+\end_layout
+
+\begin_layout Enumerate
+x2=8.00, old_pi=29.029, new_pi=0.638
+\end_layout
+
+\begin_layout Enumerate
+x2=9.00, old_pi=29.029, new_pi=0.638
+\end_layout
+
+\begin_layout Enumerate
+x2=10.00, old_pi=29.029, new_pi=0.638
+\end_layout
+
+\begin_layout Problem
+Consider an undirected graphical model pairwise factorization of the form:
+\begin_inset Formula 
+\[
+p(x_{1},...,x_{d};\psi)=\frac{1}{Z}\prod_{s\in V}\psi_{s}(x_{s})\prod_{(s,t)\in E}\psi_{st}(x_{s},x_{t})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Compute ML estimates 
+\begin_inset Formula $\{\psi_{s},\psi_{st}\}$
+\end_inset
+
+ for (i) a tree-structured graph with 
+\begin_inset Formula $E=\{(1,2),(2,3),(3,4)\}$
+\end_inset
+
+ and (ii) the fully connected graph with all 
+\begin_inset Formula $\left(\begin{array}{c}
+4\\
+2
+\end{array}\right)$
+\end_inset
+
+ edges.
+ Which graph gives the higher likelihood? Is higher likelihood better?
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+See the 
+\begin_inset Quotes eld
+\end_inset
+
+problem2.4a.txt
+\begin_inset Quotes erd
+\end_inset
+
+ file attached with this document for documentation on the IPF code and
+ clique potentials computed with the tree and full models.
+ The likelihood for the tree model was -79.9, the likelihood for the full
+ model was -77.9.
+ Although the full model has a higher likelihood, it's not necessarily better.
+ It might be overfitting the data.
+ It might be a good idea to try graphs of intermediate complexity and see
+ how their likelihoods compare.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+For graph (i) in (a), show that ML estimates 
+\begin_inset Formula $\{\hat{\psi}_{s},\hat{\psi}_{st}\}$
+\end_inset
+
+ can be written in closed form as 
+\begin_inset Formula $\hat{\psi}_{s}(x_{s})=\bar{\mu}_{s}(x_{s})$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\psi}_{st}(x_{s}x_{t})=\frac{\bar{\mu}_{st}(x_{s},x_{t})}{\bar{\mu}_{s}(x_{s})\bar{\mu}_{t}(x_{t})}$
+\end_inset
+
+.
+ Does the fully connected graph have the same closed-form solution?
+\end_layout
+
+\begin_layout Enumerate
+Assume we know that the node compatibility functions are constant; 
+\begin_inset Formula $\psi_{s}(x_{s})=1$
+\end_inset
+
+ for all 
+\begin_inset Formula $s\in V$
+\end_inset
+
+, and 
+\begin_inset Formula $\psi_{st}=\psi_{uv}$
+\end_inset
+
+ for all 
+\begin_inset Formula $(s,t),(u,v)\in E$
+\end_inset
+
+.
+ Describe a modified IPF algorithm for computing ML estimates.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The update for IPF is:
+\begin_inset Formula 
+\[
+\psi_{c}^{t+1}(x_{c})=\psi_{c}^{t}(x_{c})\frac{\bar{p}(x_{c})}{p^{t}(x_{c})}
+\]
+
+\end_inset
+
+In this case, we want the marginal to ultimately be 
+\begin_inset Formula $p^{t}(x_{c})=k$
+\end_inset
+
+, a constant.
+ Say the initial values of each edge potential are constant.
+ Then 
+\begin_inset Formula $p^{t}(x_{st})=p^{t}(x_{uv})$
+\end_inset
+
+ for all 
+\begin_inset Formula $(s,t),(u,v)\in E$
+\end_inset
+
+.
+ However, if the data is noisy, the empirical marginals 
+\begin_inset Formula $\bar{p}(x_{c})$
+\end_inset
+
+ will not be equal for all cliques, there will be some 
+\begin_inset Formula $\bar{p}(x_{st})\neq\bar{p}(x_{uv})$
+\end_inset
+
+.
+ So we can't do that.
+ But if we initialize each 
+\begin_inset Formula $\psi_{c}^{0}(x_{c})$
+\end_inset
+
+ so that: 
+\begin_inset Formula 
+\[
+\frac{\bar{p}(x_{st})}{p^{0}(x_{st})}=\frac{\bar{p}(x_{uv})}{p^{0}(x_{uv})}\,\,\,\,\forall(s,t),(u,v)\in E
+\]
+
+\end_inset
+
+then each update will keep the potentials equal to eachother.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Assume the graph 
+\begin_inset Formula $T$
+\end_inset
+
+ is a tree, but the edge set is unknown.
+ Let 
+\begin_inset Formula $\hat{\psi}(T)$
+\end_inset
+
+ be the ML estimate of the compatibility functions for all verticies and
+ edges.
+ Let 
+\begin_inset Formula $l(\hat{\psi}(T))$
+\end_inset
+
+ be the maximized log-likelihood for 
+\begin_inset Formula $T$
+\end_inset
+
+, and choose the best tree as: 
+\begin_inset Formula 
+\[
+T^{*}\in argmax_{T}l(\hat{\psi}(T))
+\]
+
+\end_inset
+
+Show that any tree 
+\begin_inset Formula $T^{*}$
+\end_inset
+
+ must be a maximum weight spanning tree, in the sense that:
+\begin_inset Formula 
+\[
+\sum_{(s,t)\in E(T^{*})}D(\bar{\mu}_{st}\parallel\bar{\mu}_{s}\bar{\mu}_{t})\ge\sum_{(s,t)\in E(T)}D(\bar{\mu}_{st}\parallel\bar{\mu}_{s}\bar{\mu}_{t})
+\]
+
+\end_inset
+
+The log-likelihood function for a tree is:
+\begin_inset Formula 
+\[
+l(\psi)=\sum_{n=1}^{N}\sum_{s\in V_{T}}\psi_{s}(x_{s}^{n})\sum_{(u,v)\in V_{T}}\psi_{uv}(x_{u}^{n},x_{v}^{n})-NlogZ
+\]
+
+\end_inset
+
+Assume equal initial values for the single node potentials across trees.
+ The IPF update for edge potentials is:
+\begin_inset Formula 
+\[
+\psi_{uv}^{t+1}(x_{u},x_{v})=\psi_{uv}^{t}(x_{u},x_{v})\frac{\bar{p}(x_{u},x_{v})}{p^{t}(x_{u},x_{v})}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\bar{p}(x_{u},x_{v})=\bar{u}_{uv}$
+\end_inset
+
+.
+ Edges with high empirical marginals will wind up with greater values for
+ the final potential function, and contribute more to the log likelihood.
+ Because we assumed single node potentials were initialized at the same
+ values, and because they have the same empirical marginals regardless of
+ the tree, the KL distance for the optimal tree 
+\begin_inset Formula $T^{*}$
+\end_inset
+
+ between 
+\begin_inset Formula $\bar{u}_{uv}$
+\end_inset
+
+ and 
+\begin_inset Formula $\bar{u}_{u}$
+\end_inset
+
+ and 
+\begin_inset Formula $\bar{u}_{v}$
+\end_inset
+
+ for a given edge will on average be higher than a sub-optimal tree, so
+ that the overall sum of KL distances will be higher for 
+\begin_inset Formula $T^{*}$
+\end_inset
+
+ than any sub-optimal tree.
+\end_layout
+
+\begin_layout Problem
+For each function 
+\begin_inset Formula $A(\theta)$
+\end_inset
+
+, compute the conjugate dual 
+\begin_inset Formula $A^{*}(\mu)$
+\end_inset
+
+ and specify an example of an exponential family for which 
+\begin_inset Formula $A(\theta)$
+\end_inset
+
+ is the cumulant function.
+ Show how the conjuate dual is related to the entropy 
+\begin_inset Formula $H(p)=-\int_{\mathcal{X}}p(x;\theta)log\, p(x;\theta)\, dx$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Problem
+Note: I adopted notation from Section 3 of Wainwright and Jordan (2008)
+ instead of 
+\begin_inset Formula $f(u)$
+\end_inset
+
+ because I think it helps the intuition behind the problem.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $A(\theta)=log(1+exp(\theta))$
+\end_inset
+
+.
+ This is the cumulant of the Bernoulli distribution.
+ To see this, let's rewrite the density function as an exponential family:
+\begin_inset Formula 
+\begin{eqnarray*}
+p(x|\mu) & = & \mu^{x}(1-\mu)^{1-x}\\
+ & = & exp\{log(\mu^{x}(1-\mu)^{1-x})\}\\
+ & = & exp\{xlog(\mu)+(1-x)log(1-\mu)\}\\
+ & = & exp\{xlog\left(\frac{\mu}{1-\mu}\right)+log(1-\mu)\}
+\end{eqnarray*}
+
+\end_inset
+
+From this we let the canonical parameter 
+\begin_inset Formula $\theta=log\left(\frac{\mu}{1-\mu}\right)$
+\end_inset
+
+.
+ If we invert this relationship we get 
+\begin_inset Formula $\mu=(1+e^{-\theta})^{-1}=\sigma(\theta)$
+\end_inset
+
+, the logistic sigmoid, and the cumulant function becomes:
+\begin_inset Formula 
+\begin{eqnarray*}
+-A(\theta) & = & log(1-\mu)\\
+ & = & log(1-\sigma(\theta))\\
+ & = & -log(1+e^{\theta})
+\end{eqnarray*}
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+The definition of conjugate dual is:
+\begin_inset Formula 
+\[
+A^{*}(\mu)=sup_{\theta}\{\mu\theta-A(\theta)\}
+\]
+
+\end_inset
+
+We maximize the expression in the sup by taking the derivative with respect
+ to 
+\begin_inset Formula $\theta$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\frac{\partial}{\partial\theta}\left[\mu\theta-A(\theta)\right]=\theta-\sigma(\theta)
+\]
+
+\end_inset
+
+We then set this expression to zero, and get 
+\begin_inset Formula $\theta^{*}=log\left(\frac{\mu}{1-\mu}\right)$
+\end_inset
+
+.
+ Then we plug this maximum into the expression for the conjugate dual to
+ get the final form:
+\begin_inset Formula 
+\begin{eqnarray*}
+A^{*}(\mu) & = & \mu log\left(\frac{\mu}{1-\mu}\right)-log(1+\frac{\mu}{1-\mu})\\
+ & ...\\
+ & = & \mu log\mu+(1-\mu)log(1-\mu)
+\end{eqnarray*}
+
+\end_inset
+
+The expression for the conjugate dual is the same as the negative entropy
+ for the Bernoulli distribution.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $A(\theta)=-log(\theta)$
+\end_inset
+
+.
+ This is the cumulant of the exponential distribution.
+ To see this:
+\begin_inset Formula 
+\begin{eqnarray*}
+p(x|\lambda) & = & \lambda e^{-\lambda x}\\
+ & = & exp\{-\lambda x+log\lambda\}
+\end{eqnarray*}
+
+\end_inset
+
+The canonical parameter is 
+\begin_inset Formula $\theta=-\lambda$
+\end_inset
+
+, and the cumulant becomes 
+\begin_inset Formula $A(\theta)=-log\lambda=-log(-\theta)$
+\end_inset
+
+.
+ We then differentiate the conjugate dual expression with respect to 
+\begin_inset Formula $\theta$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\frac{\partial}{\partial\theta}\left[\mu\theta-A(\theta)\right]=\lambda+\frac{1}{\theta}
+\]
+
+\end_inset
+
+From this we get 
+\begin_inset Formula $\theta^{*}=-\frac{1}{\lambda}$
+\end_inset
+
+, which we then plug back in to the conjugate dual expression to get:
+\begin_inset Formula 
+\begin{eqnarray*}
+A^{*}(\lambda) & = & \lambda\left(-\frac{1}{\lambda}\right)-A\left(\frac{1}{\lambda}\right)\\
+ & = & -1+log\left(\frac{1}{\lambda}\right)\\
+ & = & -1-log\lambda
+\end{eqnarray*}
+
+\end_inset
+
+The entropy of the exponential distribution is 
+\begin_inset Formula $H(\lambda)=1-log\lambda$
+\end_inset
+
+, at least according to wikipedia.
+ Sorry for not doing the integral...
+ So we have some weirdness, where the conjugate dual is not quite equal
+ to the negative entropy.
+ Either wikipedia is wrong, or I'm wrong (as well as Wainwright and Jordan,
+ see table 3.2)....
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $A(\theta)=\frac{1}{2}\theta^{T}\Sigma^{-1}\theta$
+\end_inset
+
+.
+ This is going to be messy and probably incorrect...
+ This cumulant function comes from a multivariate Gaussian with a fixed
+ covariance matrix.
+ To see this, we can turn the density for the MVG into an exponential family:
+\begin_inset Formula 
+\begin{eqnarray*}
+p(x|\mu,\Sigma) & = & \frac{1}{2\pi^{d/2}|\Sigma|^{1/2}}exp\{-\frac{1}{2}(x-\mu)^{T}\Sigma^{-1}(x-\mu)\}\\
+ & = & \frac{1}{2\pi^{d/2}|\Sigma|^{1/2}}exp\{-\frac{1}{2}(x^{T}\Sigma^{-1}x-2x^{T}\Sigma^{-1}\mu+\mu^{T}\Sigma^{-1}\mu)\}\\
+ & = & exp\{-\frac{1}{2}x^{T}\Sigma^{-1}x+x^{T}\Sigma^{-1}\mu-\frac{1}{2}\mu^{T}\Sigma^{-1}\mu-log(2\pi^{d/2}|\Sigma|^{1/2})\}\\
+ & = & h(x)exp\{x^{T}\Sigma^{-1}\mu-\frac{1}{2}\mu^{T}\Sigma^{-1}\mu\}
+\end{eqnarray*}
+
+\end_inset
+
+Let 
+\begin_inset Formula $\theta=\mu$
+\end_inset
+
+.
+ Then the cumulant function is 
+\begin_inset Formula $A(\theta)=\frac{1}{2}\mu^{T}\Sigma^{-1}\mu$
+\end_inset
+
+.
+ The derivative of the conjugate dual expression is:
+\begin_inset Formula 
+\[
+\frac{\partial}{\partial\theta}\left[\mu\theta-A(\theta)\right]=\mu-\Sigma^{-1}\theta
+\]
+
+\end_inset
+
+Setting this to zero gives 
+\begin_inset Formula $\theta^{*}=\Sigma\mu$
+\end_inset
+
+.
+ We plug this back in to get the conjugate dual expression:
+\begin_inset Formula 
+\[
+A^{*}(\mu)=\mu^{T}\Sigma\mu-\frac{1}{2}\mu^{T}\Sigma\mu=\frac{1}{2}\mu^{T}\Sigma\mu
+\]
+
+\end_inset
+
+Can't say this looks anything like the entropy of a multivariate Gaussian
+ though...
+ I'm going to have to wait and see the answer when the solutions come out.
+\end_layout
+
+\end_body
+\end_document
